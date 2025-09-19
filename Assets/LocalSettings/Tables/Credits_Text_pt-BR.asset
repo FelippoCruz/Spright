@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Credits_Text_pt-BR
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pt-BR
+  m_SharedData: {fileID: 11400000, guid: 40c8868f7ca97964183456685b8aa12c, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 142167289856
+    m_Localized: "Aguinaldo Alberto J\xFAnior\nArthur Sampaio Fernandes (Amirai)\nAur\xE9lio
+      Felippo Cruz\nDanyel Henrique Andrade\nDavid de Oliveira Lemes\nD\xE9bora Machado\nEric
+      de Lucas\n\xC9rica Okamoto\nFabiano On\xE7a\nFrancisco Quarentei Nunes\nGilles
+      Pedroza Leite\nJoyce Daniele Tavares\nJ\xFAlia Nishida\nMarcelo Krokoscz\nMurilo
+      Barbosa Sanches\nNicolas Kenji\nPedro Croco Navarro\nRafael Diogo Rossetti\nRodrigo
+      Cruz Domingos\nSandra Fid\xEAncio\nWillian Matheus Carvalho\n\nPara nossas
+      fam\xEDlias e amigos, que estiveram do nosso lado quando n\xF3s mais precis\xE1vamos.\n\nPara
+      voc\xEA, jogador, obrigado por jogar. :)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4691934359552
+    m_Localized: "Dono do Produto:\n\n\nProgramadores:\n\n\nArtistas:\n\n\n\n\nDubladores:\n\n\n\n\n\nGame/Level
+      Designers:\n\n\nRoteiristas:\n\n\nM\xFAsica/SFX:\n\n\n\n\nEmpreendedorismo:\n\n\n\n\nRedes
+      Sociais:\n\n\n\nTime Principal:\n\n\n\n\n\nAgradecimentos Especiais:"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

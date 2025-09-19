@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Subtitles_Text_pt-BR
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pt-BR
+  m_SharedData: {fileID: 11400000, guid: b9611729093956c448f4bc2a4ce861f8, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 17390940160
+    m_Localized: "Estas\u2026 s\xE3o algumas manifesta\xE7\xF5es dos seus pensamentos
+      negativos."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43081052160
+    m_Localized: "Eles n\xE3o s\xE3o a fonte dos seus problemas, mas n\xE3o faria
+      mal lidar com eles."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51410939904
+    m_Localized: "Isso ir\xE1 te ajudar em alguns aspectos da sua jornada, confian\xE7a
+      sendo um dos mais importantes\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23091374678388736
+    m_Localized: "Voc\xEA gostou dessa customiza\xE7\xE3o de personagem? Que bom,
+      pois esse foi um resumo de como seu jogo ser\xE1. Ser\xE1 voc\xEA morrendo...
+      morrendo..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23586073869037568
+    m_Localized: Morrendo...
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

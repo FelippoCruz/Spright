@@ -1,0 +1,275 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Text_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 77de46e2d32dde049aa464301f696128, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 90912894976
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 269175009280
+    m_Localized: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 440193560576
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 590500638720
+    m_Localized: Game Paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1255717253120
+    m_Localized: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1462416748544
+    m_Localized: Keyboard & Mouse Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1882094612480
+    m_Localized: Controller Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2103914573824
+    m_Localized: Graphics Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2343983951872
+    m_Localized: Audio Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3299475763200
+    m_Localized: Language Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3550567772160
+    m_Localized: Video Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3718465761280
+    m_Localized: Accessibility Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3928902381568
+    m_Localized: Extra Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4083055636480
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4294633107456
+    m_Localized: Keyboard & Mouse Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4893487443968
+    m_Localized: Controller Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5070474489856
+    m_Localized: Coming Soon!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6579312439296
+    m_Localized: Graphics Quality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6908963762176
+    m_Localized: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6974235521024
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7204540559360
+    m_Localized: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7589074350080
+    m_Localized: Master Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7745794519040
+    m_Localized: Background Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8037558693888
+    m_Localized: Music Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8265716248576
+    m_Localized: Sound Effects Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8658953220096
+    m_Localized: Voice Volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9034955796480
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9201482248192
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9315911249920
+    m_Localized: Portuguese
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9661538676736
+    m_Localized: Brightness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9816602095616
+    m_Localized: Contrast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9918045532160
+    m_Localized: Saturation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10112543797248
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10261944905728
+    m_Localized: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10460914298880
+    m_Localized: Borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10840339427328
+    m_Localized: Invert X Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11001283260416
+    m_Localized: Invert Y Axis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11276064698368
+    m_Localized: Subtitles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11387092119552
+    m_Localized: Reset to Default
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23707776233472
+    m_Localized: Ultra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24123876356096
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24407813959680
+    m_Localized: 'For a better visual experience, adjust the brightness until you
+      can barely see the symbol.
+
+      (You''ll be able to adjust this later, along
+      with contrast and saturation later in Options)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25156685967360
+    m_Localized: Select a Language...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26516257026048
+    m_Localized: Type Your Name...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7885860621299712
+    m_Localized: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7893853320556544
+    m_Localized: Load Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7916330843156480
+    m_Localized: 'Select your language:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7919491913920512
+    m_Localized: you died!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7919793555681280
+    m_Localized: try again?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7920138361024512
+    m_Localized: return to menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12177398654349312
+    m_Localized: Press Space to Jump.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12178939582918656
+    m_Localized: Press Left Mouse Button near the wall to attack it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12194377398267904
+    m_Localized: Flask of Neverending Hope
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12208106634522624
+    m_Localized: Ha! Made U Look.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22299296453144576
+    m_Localized: Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23695985637654528
+    m_Localized: Get Out...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24069585868771328
+    m_Localized: Failing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100267299000320
+    m_Localized: Select your Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100549479190528
+    m_Localized: Select your Body Type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100985556783104
+    m_Localized: Select your Face Style
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24101283692105728
+    m_Localized: Select your Hair Length
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24101609602109440
+    m_Localized: Select your Amount of Hope
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

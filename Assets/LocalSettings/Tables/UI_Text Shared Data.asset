@@ -1,0 +1,276 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Text Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI_Text
+  m_TableCollectionNameGuidString: 77de46e2d32dde049aa464301f696128
+  m_Entries:
+  - m_Id: 3718465761280
+    m_Key: AccessibilitySettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2343983951872
+    m_Key: AudioSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10460914298880
+    m_Key: Borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9661538676736
+    m_Key: Brightness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7745794519040
+    m_Key: BVol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5070474489856
+    m_Key: ComingSoon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9816602095616
+    m_Key: Contrast
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1882094612480
+    m_Key: ControllerControls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4893487443968
+    m_Key: ControllerSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4083055636480
+    m_Key: Credits
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9201482248192
+    m_Key: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3928902381568
+    m_Key: ExtraSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10112543797248
+    m_Key: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 590500638720
+    m_Key: GamePaused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6579312439296
+    m_Key: GraphicsQuality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2103914573824
+    m_Key: GraphicsSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7204540559360
+    m_Key: High
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10840339427328
+    m_Key: InvertXAxis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11001283260416
+    m_Key: InvertYAxis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1462416748544
+    m_Key: KandMControls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4294633107456
+    m_Key: KandMSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9034955796480
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3299475763200
+    m_Key: LanguageSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6908963762176
+    m_Key: Low
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7589074350080
+    m_Key: MaVol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6974235521024
+    m_Key: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8037558693888
+    m_Key: MuVol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11387092119552
+    m_Key: ResetToDefault
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1255717253120
+    m_Key: Options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 269175009280
+    m_Key: OptionsButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9315911249920
+    m_Key: Portuguese
+    m_Metadata:
+      m_Items: []
+  - m_Id: 440193560576
+    m_Key: QuitButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 90912894976
+    m_Key: ResumeButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9918045532160
+    m_Key: Saturation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8265716248576
+    m_Key: SFXVol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11276064698368
+    m_Key: Subtitles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3550567772160
+    m_Key: VideoSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8658953220096
+    m_Key: VoiceVol
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10261944905728
+    m_Key: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23707776233472
+    m_Key: Ultra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24123876356096
+    m_Key: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24407813959680
+    m_Key: BrightnessAdjustReminder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25156685967360
+    m_Key: SelectLanguage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26516257026048
+    m_Key: TypeYourName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7885860621299712
+    m_Key: NewGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7893853320556544
+    m_Key: LoadGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7916330843156480
+    m_Key: SelectYourLanguage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7919491913920512
+    m_Key: YouDied
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7919793555681280
+    m_Key: TryAgain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7920138361024512
+    m_Key: ReturnToMenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12177398654349312
+    m_Key: PressSpaceToJump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12178939582918656
+    m_Key: PressLeftMouseButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12194377398267904
+    m_Key: FlaskOfNeverendingHope
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12208106634522624
+    m_Key: HaMadeULook
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22299296453144576
+    m_Key: Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23695985637654528
+    m_Key: GetOut
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24069585868771328
+    m_Key: Failing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100267299000320
+    m_Key: SelectYourCharacter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100549479190528
+    m_Key: SelectYourBodyType
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24100985556783104
+    m_Key: SelectYourFaceStyle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24101283692105728
+    m_Key: SelectYourHairLength
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24101609602109440
+    m_Key: SelectYourAmountOfHope
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6665711327403835464
+  references:
+    version: 2
+    RefIds:
+    - rid: 6665711327403835464
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1751876159347

@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Dialogue_Text_pt-BR
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pt-BR
+  m_SharedData: {fileID: 11400000, guid: 6cb8e73b851921845b2203f1af4f5224, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 359746809856
+    m_Localized: "\xC9 realmente voc\xEA\u2026?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287294285459456
+    m_Localized: "O que voc\xEA est\xE1 fazendo aqui?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287350417829888
+    m_Localized: "Este \xE9 seu subconsciente. N\xE3o \xE9 para voc\xEA estar aqui,
+      apenas as emo\xE7\xF5es com as quais voc\xEA realmente se importa, boas ou
+      ruins\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287589124059136
+    m_Localized: "Mas j\xE1 que voc\xEA est\xE1 aqui, quer dizer que voc\xEA est\xE1
+      em estado cr\xEDtico."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287601857966080
+    m_Localized: "J\xE1 que eu sou quem voc\xEA mais se importa, eu estarei agindo
+      como um guia da sua pr\xF3pria mente.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287619083972608
+    m_Localized: "Este lugar j\xE1 foi lindo cheio de cores vibrantes de quando n\xF3s
+      \xE9ramos apenas crian\xE7as inocentes."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287633399132160
+    m_Localized: "Mas desde que voc\xEA come\xE7ou a sofrer de depress\xE3o, este
+      lugar caiu em ru\xEDnas, corrompido por pensamentos negativos e ilus\xF5es.
+      N\xE3o importa para quem voc\xEA pedir por ajuda, a \xFAnica pessoa que pode
+      realmente fazer algo sobre isso \xE9 voc\xEA mesmo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287647512965120
+    m_Localized: "Tente se livrar dos seus pensamentos negativos, e elimine as Fontes
+      de Problemas, voc\xEA saber\xE1 o que elas s\xE3o quando v\xEA-las."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 287659085049856
+    m_Localized: "Boa sorte, eu acredito em voc\xEA\u2026"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
