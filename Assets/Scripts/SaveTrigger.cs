@@ -9,6 +9,15 @@ public class SaveTrigger : MonoBehaviour
     public GameObject player1;
     public GameObject player2;
 
+    [SerializeField] ParticleSystem SaveParticle;
+
+    private void Start()
+    {
+        if (SaveParticle != null)
+        {
+            SaveParticle.Stop();
+        }
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -31,6 +40,7 @@ public class SaveTrigger : MonoBehaviour
     {
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
         {
+            if (SaveParticle != null) { SaveParticle.Play(); }
             SaveGame();
         }
     }

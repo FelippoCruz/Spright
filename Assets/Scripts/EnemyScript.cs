@@ -38,7 +38,7 @@ public class EnemyScript : MonoBehaviour
     bool isDead = false;
     bool isCirclingRight = true;
     bool isWindingUp = false;
-
+    [SerializeField] ParticleSystem bloodSplashParticle;
     public event System.Action OnDeath;
 
     void Start()
@@ -72,6 +72,11 @@ public class EnemyScript : MonoBehaviour
         patrolPoints[1] = spawn + Vector3.right * patrolOffset;
 
         SwitchState(EnemyState.Patrol);
+
+        if (bloodSplashParticle != null)
+        {
+            bloodSplashParticle.Stop();
+        }
     }
 
     void Update()
@@ -190,6 +195,7 @@ public class EnemyScript : MonoBehaviour
     {
         if (isDead) return;
 
+        if (bloodSplashParticle != null) { bloodSplashParticle.Play(); }
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 

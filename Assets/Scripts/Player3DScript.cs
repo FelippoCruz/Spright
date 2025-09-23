@@ -141,7 +141,9 @@ public class Player3DScript : MonoBehaviour
     public Animator currentAnimator;
 
     [SerializeField] GameObject Chatbox;
-
+    [SerializeField] ParticleSystem BloodSplashParticle;
+    [SerializeField] ParticleSystem HealParticle;
+    [SerializeField] ParticleSystem WalkParticle;
     void Awake()
     {
         Animator[] animators = GetComponentsInChildren<Animator>(true); // true = include inactive
@@ -179,6 +181,18 @@ public class Player3DScript : MonoBehaviour
         if (currentAnimator != null)
         {
             currentAnimator.ResetTrigger("IsDead");
+        }
+        if (BloodSplashParticle != null)
+        {
+            BloodSplashParticle.Stop();
+        }
+        if (HealParticle != null)
+        {
+            HealParticle.Stop();
+        }
+        if (WalkParticle != null)
+        {
+            WalkParticle.Stop();
         }
     }
 
@@ -717,6 +731,17 @@ public class Player3DScript : MonoBehaviour
         if (isRunning) moveSpeedMultiplier *= runSpeedMultiplier;
 
         Vector3 finalMove = (moveDirection * speed * moveSpeedMultiplier) + new Vector3(0f, velocity.y, 0f);
+        if (WalkParticle != null)
+        {
+            if (currentAnimator.GetBool("IsWalking"))
+            {
+                WalkParticle.Play();
+            }
+            else
+            {
+                WalkParticle.Stop();
+            }
+        }
         controller.Move(finalMove * Time.deltaTime);
 
         if (moveInput.magnitude > 0.1f && lockOnTarget == null)
@@ -899,6 +924,7 @@ public class Player3DScript : MonoBehaviour
     {
         if (isDead) return;
         if (isInvincible) return;
+        if (BloodSplashParticle != null) { BloodSplashParticle.Play(); }
         currentHealth -= dmg;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
         if (healthBar != null) healthBar.UpdateHealth(currentHealth, maxHealth);
@@ -909,6 +935,7 @@ public class Player3DScript : MonoBehaviour
     public void Heal(float amount)
     {
         if (isDead) return;
+        if (HealParticle != null) { HealParticle.Play(); }
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
         if (healthBar != null) healthBar.UpdateHealth(currentHealth, maxHealth);

@@ -11399,8 +11399,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7961438455973556427}
         m_TargetAssemblyTypeName: OptionsManager, Assembly-CSharp
-        m_MethodName: OpenLink
-        m_Mode: 5
+        m_MethodName: YoutubeCall
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -22124,8 +22124,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7961438455973556427}
         m_TargetAssemblyTypeName: OptionsManager, Assembly-CSharp
-        m_MethodName: OpenLink
-        m_Mode: 5
+        m_MethodName: InstagramCall
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -22393,8 +22393,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7961438455973556427}
         m_TargetAssemblyTypeName: OptionsManager, Assembly-CSharp
-        m_MethodName: OpenLink
-        m_Mode: 5
+        m_MethodName: DiscordCall
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

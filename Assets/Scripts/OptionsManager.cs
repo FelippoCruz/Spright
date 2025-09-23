@@ -303,4 +303,16 @@ public class OptionsManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         LevelLoader.Instance.LoadNextLevel("CreditsScene");
     }
+    public void DiscordCall()
+    {
+        Application.OpenURL("https://discord.gg/T8bSpSKpaa");
+    }
+    public void InstagramCall()
+    {
+        Application.OpenURL("https://www.instagram.com/mechanicall.studios?igsh=bjNnaW1iOHB6azF1");
+    }
+    public void YoutubeCall()
+    {
+        Application.OpenURL("https://youtube.com/@mechanicall_studios?si=WITE0YRhAfejShTV");
+    }
 }
