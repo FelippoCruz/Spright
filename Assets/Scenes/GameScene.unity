@@ -72593,7 +72593,7 @@ PrefabInstance:
     - target: {fileID: 387130658339815629, guid: 68b9b84f747c10349a8e303d12b1c653, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: f71a8168189596d40a34bc9771aade1e, type: 2}
+      objectReference: {fileID: 9100000, guid: f1e7f4d2f4a75d74a89011f55be5db5d, type: 2}
     - target: {fileID: 2519915257274113484, guid: 68b9b84f747c10349a8e303d12b1c653, type: 3}
       propertyPath: m_Name
       value: Girl

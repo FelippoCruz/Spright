@@ -146,18 +146,6 @@ public class Player3DScript : MonoBehaviour
     [SerializeField] ParticleSystem WalkParticle;
     void Awake()
     {
-        Animator[] animators = GetComponentsInChildren<Animator>(true); // true = include inactive
-
-        foreach (Animator anim in animators)
-        {
-            if (anim.gameObject.activeInHierarchy) // only pick the active one
-            {
-                currentAnimator = anim;
-                anim.updateMode = AnimatorUpdateMode.UnscaledTime;
-                Debug.Log("Active animator found: " + anim.gameObject.name);
-                break;
-            }
-        }
         Time.timeScale = 1f;
         currentHealth = maxHealth;
         HealUses = MaxHealUses;
@@ -196,6 +184,21 @@ public class Player3DScript : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        Animator[] animators = GetComponentsInChildren<Animator>(true); // true = include inactive
+
+        foreach (Animator anim in animators)
+        {
+            if (anim.gameObject.activeInHierarchy) // only pick the active one
+            {
+                currentAnimator = anim;
+                anim.updateMode = AnimatorUpdateMode.UnscaledTime;
+                Debug.Log("Active animator found: " + anim.gameObject.name);
+                break;
+            }
+        }
+    }
     void Update()
     {
         if (isDead) return;
