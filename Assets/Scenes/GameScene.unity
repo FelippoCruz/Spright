@@ -90331,6 +90331,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: f71a8168189596d40a34bc9771aade1e, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 307c1388d1198814e846c08943d4c5ff, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 65702495048144492, guid: 307c1388d1198814e846c08943d4c5ff, type: 3}
@@ -90876,7 +90880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 1791184678}
-  speed: 5
+  speed: 3
   jumpHeight: 2
   rotationSpeed: 10
   groundCheck: {fileID: 65101216}
@@ -90916,7 +90920,7 @@ MonoBehaviour:
     m_Bits: 0
   crouchCenterY: -1.4
   standCenterY: 0
-  runSpeedMultiplier: 1.8
+  runSpeedMultiplier: 2
   runDuration: 10
   runCooldown: 5
   runHoldThreshold: 1
