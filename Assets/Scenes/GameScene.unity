@@ -23934,7 +23934,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 7941a0e6f97d4c34fa7f8b145d44c630, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: f1e7f4d2f4a75d74a89011f55be5db5d, type: 2}
+      objectReference: {fileID: 9100000, guid: 66a8f28051e4626438b5732598b3339e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -61967,7 +61967,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    ImpulseDuration: 0.2
+    ImpulseDuration: 0.05
     ImpulseType: 0
     DissipationRate: 0.25
     RawSignal: {fileID: 0}
@@ -90905,11 +90905,11 @@ MonoBehaviour:
   lockOnSymbolPrefab: {fileID: 7115570748572837209, guid: 4c9b54148d546594b8944bdd82f56490, type: 3}
   healthBarGO: {fileID: 7086372290594301436}
   maxHealth: 100
-  rollSpeed: 15
-  rollDuration: 0.5
-  rollCooldown: 0.8
+  rollSpeed: 9
+  rollDuration: 0.8
+  rollCooldown: 1.6
   rollImpulse: {fileID: 1198488576}
-  crouchSpeedMultiplier: 0.5
+  crouchSpeedMultiplier: 0.75
   crouchHeight: 0.8
   standHeight: 3.2
   crouchTransitionSpeed: 6

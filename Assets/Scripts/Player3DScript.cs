@@ -586,7 +586,7 @@ public class Player3DScript : MonoBehaviour
         Vector3 moveDirection = ConvertToCameraSpace(moveInput);
         if (currentAnimator != null)
         {
-            if (moveInput != Vector3.zero)
+            if (moveInput.magnitude > 0.1f)
             {
                 currentAnimator.SetBool("IsWalking", true);
             }
