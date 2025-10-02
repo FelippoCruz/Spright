@@ -763,7 +763,7 @@ public class Player3DScript : MonoBehaviour
         Vector3 finalMove = currentMove + new Vector3(0f, velocity.y, 0f);
 
         // Walk particle effect
-        if (WalkParticle != null)
+        if (WalkParticle != null && currentAnimator != null)
         {
             if (currentAnimator.GetBool("IsWalking"))
                 WalkParticle.Play();
@@ -774,7 +774,8 @@ public class Player3DScript : MonoBehaviour
         controller.Move(finalMove * Time.deltaTime);
 
         float verticalVelocity = controller.velocity.y;
-        currentAnimator.SetFloat("VerticalVelocity", verticalVelocity);
+        if (currentAnimator != null)
+            currentAnimator.SetFloat("VerticalVelocity", verticalVelocity);
 
         float rawVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
 
@@ -782,7 +783,8 @@ public class Player3DScript : MonoBehaviour
         smoothVelocity = Mathf.SmoothDamp(smoothVelocity, rawVelocity, ref velocitySmoothSpeed, velocitySmoothTime);
 
         // Send the smoothed velocity to the animator
-        currentAnimator.SetFloat("Velocity", smoothVelocity);
+        if (currentAnimator != null)
+            currentAnimator.SetFloat("Velocity", smoothVelocity);
 
         if (moveInput.magnitude > 0.1f && lockOnTarget == null)
         {
