@@ -112,6 +112,11 @@ public class Player3DScript : MonoBehaviour
     Transform lockOnTarget;
     Transform shoulderProxy;
     bool isDead = false;
+    float smoothVelocity = 0f;
+    float velocitySmoothTime = 0.25f; // adjust for how snappy/gradual the blend should be
+    float velocitySmoothSpeed = 0f;  // required ref param for SmoothDamp
+    Vector3 currentMove = Vector3.zero; // smoothed movement vector
+    bool JumpAnimation = false;
 
     // Rolling
     bool isRolling = false;
@@ -278,24 +283,38 @@ public class Player3DScript : MonoBehaviour
 
         if (currentAnimator != null)
         {
-            // Get state info from Base Layer (layer index 0)
-            AnimatorStateInfo stateInfo = currentAnimator.GetCurrentAnimatorStateInfo(0);
-
-            // Check if we are in the Idle state
-            if (stateInfo.IsName("Idle"))
+            if (!controller.isGrounded && !JumpAnimation)
             {
-                // Get the current float parameter
+                currentAnimator.SetTrigger("StartJumpFall");
+                JumpAnimation = true;
+            }
+            else if (controller.isGrounded)
+            {
+                JumpAnimation = false;
+            }
+
+            float velocityIdle = currentAnimator.GetFloat("Velocity");
+
+            // Consider idle if velocity is very close to 0
+            if (velocityIdle < 0.1f) // tolerance so tiny jitters don’t break idle
+            {
                 float currentValue = currentAnimator.GetFloat("IdleTimer");
-
-                // Add to it based on time
                 currentValue += Time.deltaTime;
-
-                // Update animator parameter
                 currentAnimator.SetFloat("IdleTimer", currentValue);
             }
             else
             {
-                // Optionally reset when leaving Idle
+                // Reset timer if not idle
+                currentAnimator.SetFloat("IdleTimer", 0f);
+            }
+        }
+
+        AnimatorStateInfo stateInfo = currentAnimator.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.IsName("WaitingIdleAnimation")) // name of your waiting animation state
+        {
+            if (stateInfo.normalizedTime >= 1f) // finished once
+            {
                 currentAnimator.SetFloat("IdleTimer", 0f);
             }
         }
@@ -733,19 +752,37 @@ public class Player3DScript : MonoBehaviour
         if (isCrouching) moveSpeedMultiplier *= crouchSpeedMultiplier;
         if (isRunning) moveSpeedMultiplier *= runSpeedMultiplier;
 
-        Vector3 finalMove = (moveDirection * speed * moveSpeedMultiplier) + new Vector3(0f, velocity.y, 0f);
+        // Smooth acceleration/deceleration for movement
+        Vector3 targetMove = moveDirection * speed * moveSpeedMultiplier;
+
+        // Smoothly approach targetMove on XZ plane
+        currentMove = Vector3.Lerp(currentMove, targetMove, Time.deltaTime * 3f);
+        // ^ Increase 8f for snappier, decrease for slower acceleration
+
+        // Combine with vertical velocity
+        Vector3 finalMove = currentMove + new Vector3(0f, velocity.y, 0f);
+
+        // Walk particle effect
         if (WalkParticle != null)
         {
             if (currentAnimator.GetBool("IsWalking"))
-            {
                 WalkParticle.Play();
-            }
             else
-            {
                 WalkParticle.Stop();
-            }
         }
+
         controller.Move(finalMove * Time.deltaTime);
+
+        float verticalVelocity = controller.velocity.y;
+        currentAnimator.SetFloat("VerticalVelocity", verticalVelocity);
+
+        float rawVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
+
+        // Smooth the raw velocity to avoid sudden jumps
+        smoothVelocity = Mathf.SmoothDamp(smoothVelocity, rawVelocity, ref velocitySmoothSpeed, velocitySmoothTime);
+
+        // Send the smoothed velocity to the animator
+        currentAnimator.SetFloat("Velocity", smoothVelocity);
 
         if (moveInput.magnitude > 0.1f && lockOnTarget == null)
         {

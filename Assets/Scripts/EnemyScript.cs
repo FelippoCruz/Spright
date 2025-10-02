@@ -13,7 +13,7 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] EnemySpawner spawner;
     Animator anim;
     NavMeshAgent agent;
-    private Player3DScript playerHealth;
+    Player3DScript playerHealth;
 
     [Header("Settings")]
     [SerializeField] float detectionRange = 15f;
@@ -24,6 +24,17 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] float attackCooldown = 2f;
     [SerializeField] float damageToPlayer = 10f;
     [SerializeField] float attackWindup = 0.8f;
+    [SerializeField] float retreatDistance = 4f; // how far back the enemy retreats
+    [SerializeField] float retreatDuration = 1f; // how long the enemy retreats
+    bool isRetreating = false;
+    [SerializeField] string[] attackPattern = { "Light", "Light", "Heavy" };
+    private int currentAttackIndex = 0;
+    [SerializeField] float heavyAttackPause = 0.7f; // seconds enemy pauses after heavy attack
+
+
+    [Header("Circling Settings")]
+    [SerializeField] float circlingOffset = 1f; // max random offset around player
+    private Vector3 randomOffset; // unique offset for this enemy
 
     [Header("Health")]
     [SerializeField] float maxHealth = 100f;
@@ -47,6 +58,11 @@ public class EnemyScript : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         isCirclingRight = Random.value > 0.5f;
 
+        randomOffset = new Vector3(
+    Random.Range(-circlingOffset, circlingOffset),
+    0,
+    Random.Range(-circlingOffset, circlingOffset)
+);
         if (!player)
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -143,28 +159,70 @@ public class EnemyScript : MonoBehaviour
     void HandleAttack()
     {
         FaceTarget(player.position);
-        CirclingMovement();
 
-        if (!isWindingUp && Time.time >= lastAttackTime + attackCooldown)
+        if (!isWindingUp)
         {
-            isWindingUp = true;
-            lastAttackTime = Time.time;
-            StartCoroutine(AttackAfterDelay());
+            float timeSinceLastAttack = Time.time - lastAttackTime;
+
+            if (timeSinceLastAttack >= attackCooldown)
+            {
+                // Start attack
+                isWindingUp = true;
+                lastAttackTime = Time.time;
+                StartCoroutine(AttackAfterDelay());
+            }
+            else if (!isRetreating)
+            {
+                // Retreat if attack is on cooldown
+                StartCoroutine(RetreatFromPlayer());
+            }
         }
+
+        CirclingMovement();
     }
+
+    IEnumerator RetreatFromPlayer()
+    {
+        isRetreating = true;
+        Vector3 retreatDir = (transform.position - player.position).normalized;
+        Vector3 retreatTarget = transform.position + retreatDir * retreatDistance;
+
+        if (NavMesh.SamplePosition(retreatTarget, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+
+        yield return new WaitForSeconds(retreatDuration);
+        isRetreating = false;
+    }
+
 
     IEnumerator AttackAfterDelay()
     {
+        string attackType = attackPattern[currentAttackIndex];
+        currentAttackIndex = (currentAttackIndex + 1) % attackPattern.Length;
+
+        //anim.SetTrigger(attackType == "Light" ? "LightAttack" : "HeavyAttack");
         anim.SetTrigger("IsAttacking");
+
         yield return new WaitForSeconds(attackWindup);
 
         if (!isDead && Vector3.Distance(transform.position, player.position) <= attackRange)
         {
-            playerHealth?.TakeDamage(damageToPlayer);
-            Debug.Log($"Enemy dealt {damageToPlayer} damage!");
+            float damage = attackType == "Light" ? damageToPlayer : damageToPlayer * 1.5f;
+            playerHealth?.TakeDamage(damage);
+            Debug.Log($"Enemy dealt {damage} damage ({attackType})!");
+        }
+
+        if (attackType == "Heavy")
+        {
+            agent.isStopped = true; // stop movement
+            yield return new WaitForSeconds(heavyAttackPause);
+            agent.isStopped = false; // resume movement
         }
 
         isWindingUp = false;
+        //anim.ResetTrigger(attackType == "Light" ? "LightAttack" : "HeavyAttack");
         anim.ResetTrigger("IsAttacking");
     }
 
@@ -172,7 +230,7 @@ public class EnemyScript : MonoBehaviour
     {
         Vector3 toPlayer = (transform.position - player.position).normalized;
         Vector3 circleDir = isCirclingRight ? Vector3.Cross(Vector3.up, toPlayer) : Vector3.Cross(toPlayer, Vector3.up);
-        Vector3 target = player.position + toPlayer * circlingRadius + circleDir * circlingRadius;
+        Vector3 target = player.position + toPlayer * circlingRadius + circleDir * circlingRadius + randomOffset;
 
         if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {

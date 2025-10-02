@@ -541,6 +541,14 @@ MonoBehaviour:
   attackCooldown: 2
   damageToPlayer: 10
   attackWindup: 0.3
+  retreatDistance: 5
+  retreatDuration: 2
+  attackPattern:
+  - Light
+  - Light
+  - Heavy
+  heavyAttackPause: 0.5
+  circlingOffset: 3
   maxHealth: 30
   healthBarOffset: {x: 7, y: 2, z: 0}
   bloodSplashParticle: {fileID: 1561978854879786554}
