@@ -153,7 +153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 291.01505, y: -1903}
+  m_AnchoredPosition: {x: 291.01505, y: -1970}
   m_SizeDelta: {x: 1314.5619, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &16322377
@@ -289,7 +289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 156.82764, y: -1572}
+  m_AnchoredPosition: {x: 156.82764, y: -1639}
   m_SizeDelta: {x: 1582.9347, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &234904966
@@ -426,7 +426,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5301}
+  m_AnchoredPosition: {x: 0, y: -5368}
   m_SizeDelta: {x: 1200, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &446451081
@@ -792,6 +792,7 @@ MonoBehaviour:
 
 
 
+
     Writers:
 
 
@@ -974,7 +975,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -4708}
+  m_AnchoredPosition: {x: 0, y: -4775}
   m_SizeDelta: {x: 3000, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &674183677
@@ -1186,7 +1187,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 200.81856, y: -2226}
+  m_AnchoredPosition: {x: 200.81856, y: -2293}
   m_SizeDelta: {x: 1494.9586, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &815218121
@@ -1828,7 +1829,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 137.99352, y: -1373}
+  m_AnchoredPosition: {x: 137.99352, y: -1440}
   m_SizeDelta: {x: 1620.601, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1625813127
@@ -2123,7 +2124,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Aur\xE9lio Felippo Cruz\nPedro Croco Navarro"
+  m_text: "Aur\xE9lio Felippo Cruz\nDanyel Henrique Andrade\nPedro Croco Navarro"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36fd904e17bdc83499a9d26e29582c5b, type: 2}
   m_sharedMaterial: {fileID: 7252229961119978538, guid: 36fd904e17bdc83499a9d26e29582c5b, type: 2}
@@ -2237,7 +2238,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 242.31, y: -2872}
+  m_AnchoredPosition: {x: 242.31, y: -2939}
   m_SizeDelta: {x: 1412, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1763507563
@@ -2635,7 +2636,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 164.10869, y: -2485}
+  m_AnchoredPosition: {x: 164.10869, y: -2552}
   m_SizeDelta: {x: 1568.3868, y: 90.2794}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2124551542

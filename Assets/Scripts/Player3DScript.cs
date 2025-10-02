@@ -3,6 +3,7 @@ using Unity.Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class Player3DScript : MonoBehaviour
 {
@@ -143,17 +144,71 @@ public class Player3DScript : MonoBehaviour
     // Custom grounded flag
     bool myIsGrounded = false;
 
+    // Input System
+    PlayerControls PlayerControls;
+    Vector2 CurrentMovement;
+    float VerticalInput;
+    float HorizontalInput;
+    bool MovementPressed;
+    bool RunPressed;
+
     public Animator currentAnimator;
 
     [SerializeField] GameObject Chatbox;
     [SerializeField] ParticleSystem BloodSplashParticle;
     [SerializeField] ParticleSystem HealParticle;
     [SerializeField] ParticleSystem WalkParticle;
+
+    private void OnEnable()
+    {
+        PlayerControls.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        PlayerControls.Player.Disable();
+    }
     void Awake()
     {
         Time.timeScale = 1f;
         currentHealth = maxHealth;
         HealUses = MaxHealUses;
+        PlayerControls = new PlayerControls();
+        PlayerControls.Player.Move3D.performed += ctx =>
+        {
+            CurrentMovement = ctx.ReadValue<Vector2>();
+            MovementPressed = CurrentMovement.x != 0 || CurrentMovement.y != 0;
+        };
+        PlayerControls.Player.Move3D.canceled += ctx =>
+        {
+            CurrentMovement = Vector2.zero;
+        };
+        PlayerControls.Player.Sprint.performed += ctx =>
+        {
+            if (runCooldownRemaining <= 0f)
+            {
+                StartRun();
+            }
+        };
+
+        PlayerControls.Player.Sprint.canceled += ctx =>
+        {
+            StopRun();
+        };
+
+        // --- Roll ---
+        PlayerControls.Player.Roll.performed += ctx =>
+        {
+            TryRoll();
+        };
+        PlayerControls.Player.Jump.performed += ctx =>
+        {
+            if (IsGrounded())
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.gravity.y);
+                if (currentAnimator != null) currentAnimator.SetTrigger("IsJumping");
+            }
+        };
 
         if (healthBarGO != null)
             healthBar = healthBarGO.GetComponent<HealthBarScript>();
@@ -215,7 +270,7 @@ public class Player3DScript : MonoBehaviour
         {
             // Force idle and skip fall logic
             if (currentAnimator != null)
-                currentAnimator.Play("Idle");
+                currentAnimator.Play("Locomotion Blend Tree");
 
             return;
         }
@@ -224,13 +279,14 @@ public class Player3DScript : MonoBehaviour
         DetectSlide();
         if (!onLadder)
         {
-            if (!onSlide)
-            {
-                HandleShiftInput();
-            }
+            //if (!onSlide)
+            //{
+            //    HandleShiftInput();
+            //}
             HandleRoll();
             HandleCrouch();
             HandleFallTracking();
+            HandleRunning();
         }
         if (!isRolling)
         {
@@ -272,10 +328,11 @@ public class Player3DScript : MonoBehaviour
             if (runTimer <= 0f)
             {
                 isRunning = false;
-                if (currentAnimator != null) { currentAnimator.SetBool("IsRunning", false); }
+                if (currentAnimator != null) currentAnimator.SetBool("IsRunning", false);
                 runCooldownRemaining = runCooldown;
             }
         }
+
         if (runCooldownRemaining > 0f)
             runCooldownRemaining -= Time.deltaTime;
 
@@ -321,7 +378,7 @@ public class Player3DScript : MonoBehaviour
 
         if (Chatbox != null && Chatbox.activeSelf && Time.timeScale == 0)
         {
-            currentAnimator.Play("Idle");
+            currentAnimator.Play("Locomotion Blend Tree");
         }
         if (onLadder && !currentAnimator.GetBool("IsWalking"))
         {
@@ -338,47 +395,79 @@ public class Player3DScript : MonoBehaviour
         currentHealth = health;
     }
 
-    void HandleShiftInput()
+    private void HandleRunning()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (isRunning)
         {
-            shiftPressed = true;
-            shiftPressTimer = 0f;
-            shiftUsedForRun = false;
-        }
-
-        if (shiftPressed)
-        {
-            shiftPressTimer += Time.deltaTime;
-            if (shiftPressTimer >= runHoldThreshold && !shiftUsedForRun)
+            runTimer -= Time.deltaTime;
+            if (runTimer <= 0f)
             {
-                if (runCooldownRemaining <= 0f)
-                {
-                    isRunning = true;
-                    if (currentAnimator != null) { currentAnimator.SetBool("IsRunning", true); }
-                    runTimer = runDuration;
-                }
-                shiftUsedForRun = true;
+                StopRun();
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (runCooldownRemaining > 0f)
+            runCooldownRemaining -= Time.deltaTime;
+    }
+
+    private void StartRun()
+    {
+        isRunning = true;
+        runTimer = runDuration;
+        if (currentAnimator != null) currentAnimator.SetBool("IsRunning", true);
+    }
+
+    private void StopRun()
+    {
+        if (isRunning)
         {
-            if (!shiftUsedForRun && shiftPressTimer < runHoldThreshold)
-            {
-                TryRoll();
-            }
-
-            if (isRunning)
-            {
-                isRunning = false;
-                if (currentAnimator != null) { currentAnimator.SetBool("IsRunning", false); }
-                runCooldownRemaining = runCooldown;
-            }
-
-            shiftPressed = false;
+            isRunning = false;
+            if (currentAnimator != null) currentAnimator.SetBool("IsRunning", false);
+            runCooldownRemaining = runCooldown;
         }
     }
+
+    //void HandleShiftInput()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.LeftShift))
+    //    {
+    //        shiftPressed = true;
+    //        shiftPressTimer = 0f;
+    //        shiftUsedForRun = false;
+    //    }
+
+    //    if (shiftPressed)
+    //    {
+    //        shiftPressTimer += Time.deltaTime;
+    //        if (shiftPressTimer >= runHoldThreshold && !shiftUsedForRun)
+    //        {
+    //            if (runCooldownRemaining <= 0f)
+    //            {
+    //                isRunning = true;
+    //                if (currentAnimator != null) { currentAnimator.SetBool("IsRunning", true); }
+    //                runTimer = runDuration;
+    //            }
+    //            shiftUsedForRun = true;
+    //        }
+    //    }
+
+    //    if (Input.GetKeyUp(KeyCode.LeftShift))
+    //    {
+    //        if (!shiftUsedForRun && shiftPressTimer < runHoldThreshold)
+    //        {
+    //            TryRoll();
+    //        }
+
+    //        if (isRunning)
+    //        {
+    //            isRunning = false;
+    //            if (currentAnimator != null) { currentAnimator.SetBool("IsRunning", false); }
+    //            runCooldownRemaining = runCooldown;
+    //        }
+
+    //        shiftPressed = false;
+    //    }
+    //}
 
     void HandleCrouch()
     {
@@ -598,29 +687,23 @@ public class Player3DScript : MonoBehaviour
     {
         myIsGrounded = false;
 
-        float x = Input.GetAxis("Horizontal1") * (OptionsManager.InvertX ? -1f : 1f);
-        float z = Input.GetAxis("Vertical1") * (OptionsManager.InvertY ? -1f : 1f);
+        // Read movement input from New Input System
+        float x = CurrentMovement.x * (OptionsManager.InvertX ? -1f : 1f);
+        float z = CurrentMovement.y * (OptionsManager.InvertY ? -1f : 1f);
 
         Vector3 moveInput = new Vector3(x, 0f, z);
         Vector3 moveDirection = ConvertToCameraSpace(moveInput);
+
         if (currentAnimator != null)
-        {
-            if (moveInput.magnitude > 0.1f)
-            {
-                currentAnimator.SetBool("IsWalking", true);
-            }
-            else
-            {
-                currentAnimator.SetBool("IsWalking", false);
-            }
-        }
+            currentAnimator.SetBool("IsWalking", moveInput.magnitude > 0.1f);
+
+        // ---------------- LADDER ----------------
         if (onLadder)
         {
             if (ladderDropCooldownFrames > 0)
                 ladderDropCooldownFrames--;
 
-            float vertical = Input.GetAxis("Vertical1");
-            Debug.Log($"[LADDER] vertical={vertical}, moveDir={moveDirection}, lastGrabDir={lastGrabLadderDirection}");
+            float vertical = CurrentMovement.y; // new input system vertical
 
             velocity.y = 0f;
 
@@ -632,25 +715,18 @@ public class Player3DScript : MonoBehaviour
             {
                 localInputDir.Normalize();
                 float dot = Vector3.Dot(localInputDir, lastGrabLadderDirection.normalized);
-                Debug.Log($"[LADDER] Dot product (player space) = {dot}");
 
-                // EXIT DOWNWARD
                 if (dot < 0f && vertical < -0.01f && ladderDropCooldownFrames == 0)
                 {
                     Vector3 feetPosition = controller.bounds.center;
-                    feetPosition.y = controller.bounds.min.y; // just above feet
+                    feetPosition.y = controller.bounds.min.y;
                     float ladderFloorDropDistance = 0.6f;
 
                     if (Physics.Raycast(feetPosition, Vector3.down, out RaycastHit floorHit, ladderFloorDropDistance, groundMask) && transform.position.y <= 3)
                     {
-                        Debug.Log($"[LADDER] Floor detected below at {floorHit.point} on {floorHit.collider.name}, dropping ladder.");
-                        DropLadder(false); // exiting downward: no forward push
+                        DropLadder(false);
                         ladderDropCooldownFrames = 5;
                         return;
-                    }
-                    else
-                    {
-                        Debug.Log($"[LADDER] Pressing down but no floor detected below. Origin={feetPosition}, dist={ladderFloorDropDistance}");
                     }
                 }
             }
@@ -659,22 +735,16 @@ public class Player3DScript : MonoBehaviour
             Vector3 ladderMove = new Vector3(moveDirection.x * 0.1f, vertical * ClimbingSpeed, moveDirection.z * 0.1f);
             controller.Move(ladderMove * Time.deltaTime);
 
-            // Ladder presence check at chest level
+            // Ladder chest detection
             Vector3 checkOriginChest = controller.bounds.center;
-            checkOriginChest.y = ((controller.bounds.min.y + controller.bounds.max.y) / 2f); // chest height
+            checkOriginChest.y = ((controller.bounds.min.y + controller.bounds.max.y) / 2f);
 
-            bool goingDown = Input.GetAxis("Vertical1") < -0.01f;
+            bool goingDown = vertical < -0.01f;
 
-            if (goingDown)
-            {
-                // Ignore chest ray when pressing down; rely only on feet logic
-                chestMissFrames = 0; // reset since we don't care about chest
-            }
-            else
+            if (!goingDown)
             {
                 if (Physics.Raycast(checkOriginChest, transform.forward, out RaycastHit ladderHitChest, ladderDetectDistance, ladderMask))
                 {
-                    // Reset miss counter and rotate toward ladder
                     chestMissFrames = 0;
 
                     Vector3 lookDir = -ladderHitChest.normal;
@@ -687,64 +757,57 @@ public class Player3DScript : MonoBehaviour
                 }
                 else
                 {
-                    // Count consecutive misses
                     chestMissFrames++;
-
                     if (chestMissFrames > chestMissTolerance && ladderDropCooldownFrames == 0)
                     {
-                        Debug.Log("[LADDER] Chest lost ladder for several frames, dropping.");
-                        DropLadder(true); // exiting forward/top
+                        DropLadder(true);
                         ladderDropCooldownFrames = 5;
-                        chestMissFrames = 0; // reset
+                        chestMissFrames = 0;
                     }
                 }
+            }
+            else
+            {
+                chestMissFrames = 0;
             }
 
             return;
         }
 
-        // Se estamos no escorregador, mover automaticamente e ignorar input
+        // ---------------- SLIDE ----------------
         if (onSlide)
         {
             currentAnimator.SetBool("IsOnSlide", true);
-            // always push a bit down so we stick to the slide
             Vector3 slideWorldDir = (Vector3.right + Vector3.down * 3f).normalized;
             controller.Move(slideWorldDir * slideSpeed * Time.deltaTime);
 
-            // Raycast from feet downward with a generous distance
             Vector3 feetPosition = controller.bounds.center;
             feetPosition.y = controller.bounds.min.y + 0.1f;
             bool stillOnSlide = Physics.Raycast(feetPosition, Vector3.down, out RaycastHit slideHit, 0.5f, slideMask);
 
             if (stillOnSlide)
             {
-                slideMissFrames = 0; // reset grace period
+                slideMissFrames = 0;
             }
             else
             {
                 slideMissFrames++;
                 if (slideMissFrames >= maxSlideMissFrames)
                 {
-                    Debug.Log("[SLIDE] Saindo do escorregador após grace period.");
                     onSlide = false;
                     currentAnimator.SetBool("IsOnSlide", false);
                     slideMissFrames = 0;
                 }
             }
 
-            return; // ignore player input while sliding
+            return;
         }
 
-        // NORMAL MOVEMENT
-
+        // ---------------- NORMAL MOVEMENT ----------------
         if (IsGrounded() && velocity.y < 0f)
             velocity.y = -2f;
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.gravity.y);
-            if (currentAnimator != null) { currentAnimator.SetTrigger("IsJumping"); }
-        }
+        // Jump now handled in input callback -> no GetButtonDown here
 
         velocity.y += Physics.gravity.y * Time.deltaTime;
 
@@ -752,25 +815,11 @@ public class Player3DScript : MonoBehaviour
         if (isCrouching) moveSpeedMultiplier *= crouchSpeedMultiplier;
         if (isRunning) moveSpeedMultiplier *= runSpeedMultiplier;
 
-        // Smooth acceleration/deceleration for movement
         Vector3 targetMove = moveDirection * speed * moveSpeedMultiplier;
-
-        // Smoothly approach targetMove on XZ plane
         currentMove = Vector3.Lerp(currentMove, targetMove, Time.deltaTime * 3f);
-        // ^ Increase 8f for snappier, decrease for slower acceleration
 
-        // Combine with vertical velocity
+        if (WalkParticle != null && currentAnimator != null) { if (currentAnimator.GetBool("IsWalking")) WalkParticle.Play(); else WalkParticle.Stop(); }
         Vector3 finalMove = currentMove + new Vector3(0f, velocity.y, 0f);
-
-        // Walk particle effect
-        if (WalkParticle != null && currentAnimator != null)
-        {
-            if (currentAnimator.GetBool("IsWalking"))
-                WalkParticle.Play();
-            else
-                WalkParticle.Stop();
-        }
-
         controller.Move(finalMove * Time.deltaTime);
 
         float verticalVelocity = controller.velocity.y;
@@ -778,20 +827,20 @@ public class Player3DScript : MonoBehaviour
             currentAnimator.SetFloat("VerticalVelocity", verticalVelocity);
 
         float rawVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
-
-        // Smooth the raw velocity to avoid sudden jumps
         smoothVelocity = Mathf.SmoothDamp(smoothVelocity, rawVelocity, ref velocitySmoothSpeed, velocitySmoothTime);
 
-        // Send the smoothed velocity to the animator
         if (currentAnimator != null)
             currentAnimator.SetFloat("Velocity", smoothVelocity);
 
-        if (moveInput.magnitude > 0.1f && lockOnTarget == null)
+        // ---------------- ROTATION ----------------
+        Vector3 moveDir = new Vector3(CurrentMovement.x, 0, CurrentMovement.y);
+        if (moveDir.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
+
 
     void HandleRoll()
     {

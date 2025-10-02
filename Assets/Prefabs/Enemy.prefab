@@ -535,7 +535,7 @@ MonoBehaviour:
   spawner: {fileID: 0}
   detectionRange: 25
   attackRange: 2
-  moveSpeed: 6
+  moveSpeed: 4
   patrolOffset: 25
   circlingRadius: 3
   attackCooldown: 2

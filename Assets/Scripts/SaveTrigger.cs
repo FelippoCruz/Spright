@@ -58,8 +58,8 @@ public class SaveTrigger : MonoBehaviour
 
         SaveData data = new SaveData
         {
-            PlayerHealth1 = player1Script != null ? player1Script.GetCurrentHealth() : 0f,
-            PlayerHealth2 = player2Script != null ? player2Script.GetCurrentHealth() : 0f,
+            PlayerHealth1 = player1Script != null ? player1Script.GetCurrentHealth() : 100f,
+            PlayerHealth2 = player2Script != null ? player2Script.GetCurrentHealth() : 100f,
             Player1Position = player1.transform.position,
             Player2Position = player2.transform.position,
             TimesTalkedToMainNPC = timesTalkedToMainNPC,

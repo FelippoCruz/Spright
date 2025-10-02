@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player2DScript : MonoBehaviour
 {
@@ -29,6 +30,13 @@ public class Player2DScript : MonoBehaviour
     float currentHealth;
     private HealthBarScript healthBar;
 
+    // Input System
+    PlayerControls PlayerControls;
+    Vector2 CurrentMovement;
+    float VerticalInput;
+    float HorizontalInput;
+    bool MovementPressed;
+
     void Awake()
     {
         currentHealth = maxHealth;
@@ -51,6 +59,16 @@ public class Player2DScript : MonoBehaviour
         {
             Debug.LogWarning("Player2DScript: healthBarGO is not assigned!");
         }
+
+        PlayerControls.Player.Move2D.performed += ctx =>
+        {
+            CurrentMovement = ctx.ReadValue<Vector2>();
+            MovementPressed = CurrentMovement.x != 0 || CurrentMovement.y != 0;
+        };
+        PlayerControls.Player.Move2D.canceled += ctx =>
+        {
+            CurrentMovement = Vector2.zero;
+        };
     }
 
     void Update()
