@@ -12,6 +12,8 @@ public class Player3DScript : MonoBehaviour
     [SerializeField] float speed = 5f;
     [SerializeField] float jumpHeight = 2f;
     [SerializeField] float rotationSpeed = 10f;
+    float rotationSmoothVelocity;
+
 
     [Header("Ground Check")]
     [SerializeField] Transform groundCheck;
@@ -209,6 +211,7 @@ public class Player3DScript : MonoBehaviour
                 if (currentAnimator != null) currentAnimator.SetTrigger("IsJumping");
             }
         };
+        PlayerControls.Player.Crouch.performed += ctx => { /* No code needed, we use .triggered in Update */ };
 
         if (healthBarGO != null)
             healthBar = healthBarGO.GetComponent<HealthBarScript>();
@@ -270,6 +273,7 @@ public class Player3DScript : MonoBehaviour
         {
             // Force idle and skip fall logic
             if (currentAnimator != null)
+                currentAnimator.SetFloat("Velocity", 0f);
                 currentAnimator.Play("Locomotion Blend Tree");
 
             return;
@@ -378,6 +382,7 @@ public class Player3DScript : MonoBehaviour
 
         if (Chatbox != null && Chatbox.activeSelf && Time.timeScale == 0)
         {
+            currentAnimator.SetFloat("Velocity", 0f);
             currentAnimator.Play("Locomotion Blend Tree");
         }
         if (onLadder && !currentAnimator.GetBool("IsWalking"))
@@ -471,7 +476,7 @@ public class Player3DScript : MonoBehaviour
 
     void HandleCrouch()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (PlayerControls.Player.Crouch.triggered)
         {
             if (isCrouching)
             {
@@ -832,13 +837,21 @@ public class Player3DScript : MonoBehaviour
         if (currentAnimator != null)
             currentAnimator.SetFloat("Velocity", smoothVelocity);
 
-        // ---------------- ROTATION ----------------
+        // ---------------- ADVANCED SMOOTH ROTATION ----------------
         Vector3 moveDir = new Vector3(CurrentMovement.x, 0, CurrentMovement.y);
         if (moveDir.sqrMagnitude > 0.01f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            float smoothAngle = Mathf.SmoothDampAngle(
+                transform.eulerAngles.y,
+                targetAngle,
+                ref rotationSmoothVelocity,
+                0.15f // rotation smooth time (lower = snappier)
+            );
+
+            transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
         }
+
     }
 
 

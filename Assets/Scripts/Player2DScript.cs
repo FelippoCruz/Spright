@@ -7,7 +7,7 @@ public class Player2DScript : MonoBehaviour
     [Header("Movement")]
     [SerializeField] CharacterController CC;
     [SerializeField] float Speed2 = 5f;
-    [SerializeField] float RotSpeed = 360f;
+    [SerializeField] float RotSpeed = 8f; // smaller = slower rotation
 
     [Header("Shooting")]
     [SerializeField] float BulletSpeed = 10f;
@@ -31,23 +31,33 @@ public class Player2DScript : MonoBehaviour
     private HealthBarScript healthBar;
 
     // Input System
-    PlayerControls PlayerControls;
-    Vector2 CurrentMovement;
-    float VerticalInput;
-    float HorizontalInput;
-    bool MovementPressed;
+    private PlayerControls playerControls;
+    private Vector2 moveInput;
 
     void Awake()
     {
         currentHealth = maxHealth;
         HealUses = MaxHealUses;
 
+        // Instantiate PlayerControls
+        playerControls = new PlayerControls();
+
+        // Subscribe to Move2D input
+        playerControls.Player.Move2D.performed += ctx =>
+        {
+            moveInput = ctx.ReadValue<Vector2>();
+        };
+        playerControls.Player.Move2D.canceled += ctx =>
+        {
+            moveInput = Vector2.zero;
+        };
+
+        // Health setup
         if (healthBarGO != null)
         {
             healthBar = healthBarGO.GetComponent<HealthBarScript>();
             if (healthBar != null)
             {
-                // atualiza UI inicial
                 healthBar.UpdateHealth(currentHealth, maxHealth);
             }
             else
@@ -59,71 +69,64 @@ public class Player2DScript : MonoBehaviour
         {
             Debug.LogWarning("Player2DScript: healthBarGO is not assigned!");
         }
+    }
 
-        PlayerControls.Player.Move2D.performed += ctx =>
-        {
-            CurrentMovement = ctx.ReadValue<Vector2>();
-            MovementPressed = CurrentMovement.x != 0 || CurrentMovement.y != 0;
-        };
-        PlayerControls.Player.Move2D.canceled += ctx =>
-        {
-            CurrentMovement = Vector2.zero;
-        };
+    void OnEnable()
+    {
+        playerControls.Enable();
+    }
+
+    void OnDisable()
+    {
+        playerControls.Disable();
     }
 
     void Update()
     {
-        if (HealText != null) { HealText.text = HealUses.ToString(); }
+        if (HealText != null)
+            HealText.text = HealUses.ToString();
 
         HandleMovement();
         HandleShooting();
 
-        if (Input.GetKeyDown(KeyCode.R) && HealUses > 0)
+        if (Keyboard.current.rKey.wasPressedThisFrame && HealUses > 0)
         {
             Heal(HealingAmount);
             HealUses--;
         }
     }
 
-    public float GetCurrentHealth() => currentHealth;
-    public float GetMaxHealth() => maxHealth;
-
-    public void SetCurrentHealth(float health)
-    {
-        currentHealth = health;
-    }
-
     void HandleMovement()
     {
-        // Get input
-        float x = Input.GetAxis("Horizontal2") * (OptionsManager.InvertX ? -1f : 1f);
-        float z = Input.GetAxis("Vertical2") * (OptionsManager.InvertY ? -1f : 1f);
+        // Apply inversion options
+        float x = moveInput.x * (OptionsManager.InvertX ? -1f : 1f);
+        float z = moveInput.y * (OptionsManager.InvertY ? -1f : 1f);
 
         // -------- Movement --------
-        // Move only forward/back relative to player facing
         if (Mathf.Abs(z) > 0.01f)
         {
             Vector3 forwardMove = transform.forward * z;
             CC.Move(forwardMove.normalized * Speed2 * Time.deltaTime);
         }
 
-        // -------- Rotation --------
-        // Rotate in place based on horizontal input (x)
+        // -------- Smooth Rotation --------
         if (Mathf.Abs(x) > 0.01f)
         {
-            float rotationAmount = x * RotSpeed * Time.deltaTime;
-            transform.Rotate(Vector3.up, rotationAmount);
-        }
+            // Target direction = current forward rotated by input X
+            Quaternion targetRotation = Quaternion.Euler(0, x * 90f, 0) * transform.rotation;
 
-        // -------- Diagonal movement fix --------
-        // If both x and z are pressed, move forward/back normally and rotate based on x only.
-        // This prevents "shaking" when going backwards and ensures natural diagonal motion.
-        // No extra code needed; the above handles it correctly.
+            // Smoothly rotate
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                Time.deltaTime * RotSpeed
+            );
+        }
     }
 
     void HandleShooting()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             GameObject bullet = Instantiate(BulletPrefab, BulletSpawn.position, BulletSpawn.rotation);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
@@ -138,6 +141,10 @@ public class Player2DScript : MonoBehaviour
             }
         }
     }
+
+    public float GetCurrentHealth() => currentHealth;
+    public float GetMaxHealth() => maxHealth;
+    public void SetCurrentHealth(float health) => currentHealth = health;
 
     public void TakeDamage(float amount)
     {
@@ -157,10 +164,11 @@ public class Player2DScript : MonoBehaviour
     {
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-        if (healthBar != null) healthBar.UpdateHealth(currentHealth, maxHealth);
+        if (healthBar != null)
+            healthBar.UpdateHealth(currentHealth, maxHealth);
     }
 
-    public void SetHealUsesToMax() { HealUses = MaxHealUses; }
+    public void SetHealUsesToMax() => HealUses = MaxHealUses;
 
     void Die()
     {
