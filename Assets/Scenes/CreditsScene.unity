@@ -1550,7 +1550,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creditsContent: {fileID: 1248803206}
   scrollSpeed: 60
-  topY: 5300
+  topY: 5350
   companyLogoGroup: {fileID: 446451083}
   fadeDuration: 5
   logoPause: 4

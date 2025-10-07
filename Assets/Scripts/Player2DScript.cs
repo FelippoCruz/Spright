@@ -81,6 +81,12 @@ public class Player2DScript : MonoBehaviour
         playerControls.Disable();
     }
 
+    private void Start()
+    {
+        if (healthBar != null)
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+    }
+
     void Update()
     {
         if (HealText != null)

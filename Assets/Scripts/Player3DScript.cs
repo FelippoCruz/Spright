@@ -249,6 +249,9 @@ public class Player3DScript : MonoBehaviour
 
     void Start()
     {
+        if (healthBar != null)
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+
         Animator[] animators = GetComponentsInChildren<Animator>(true); // true = include inactive
 
         foreach (Animator anim in animators)
