@@ -270,6 +270,10 @@ MonoBehaviour:
     m_Localized: Select your Amount of Hope
     m_Metadata:
       m_Items: []
+  - m_Id: 34127099146809344
+    m_Localized: Your soul takes form... of a brilliant sphere
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

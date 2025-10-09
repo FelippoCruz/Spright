@@ -92,6 +92,9 @@ public class Player2DScript : MonoBehaviour
         if (HealText != null)
             HealText.text = HealUses.ToString();
 
+        if (healthBar != null)
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+
         HandleMovement();
         HandleShooting();
 

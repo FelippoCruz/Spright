@@ -263,6 +263,10 @@ MonoBehaviour:
     m_Key: SelectYourAmountOfHope
     m_Metadata:
       m_Items: []
+  - m_Id: 34127099146809344
+    m_Key: Soul
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

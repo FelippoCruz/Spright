@@ -269,6 +269,8 @@ public class Player3DScript : MonoBehaviour
     {
         if (isDead) return;
         if (HealText != null) { HealText.text = HealUses.ToString(); }
+        if (healthBar != null)
+            healthBar.UpdateHealth(currentHealth, maxHealth);
         // Countdown ladder regrab cooldown frames at the start of Update
         if (ladderRegrabFrames > 0)
             ladderRegrabFrames = Mathf.Max(0, ladderRegrabFrames - 1);

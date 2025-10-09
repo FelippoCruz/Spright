@@ -268,6 +268,10 @@ MonoBehaviour:
     m_Localized: "Selecione sua Quantidade de Esperan\xE7a"
     m_Metadata:
       m_Items: []
+  - m_Id: 34127099146809344
+    m_Localized: Sua alma toma uma forma... a de uma esfera que brilha
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
