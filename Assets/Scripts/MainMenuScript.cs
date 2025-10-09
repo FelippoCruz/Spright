@@ -12,7 +12,7 @@ public class MainMenuScript : MonoBehaviour
     void Play()
     {
         SaveSystem.DeleteSave();
-        LevelLoader.Instance.LoadNextLevel("CharacterScene");
+        LevelLoader.Instance.LoadNextLevel("House");
     }
 
     public void LoadGame()

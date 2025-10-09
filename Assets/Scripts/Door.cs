@@ -3,42 +3,78 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     [Header("Player Settings")]
-    public float interactDistance = 3f; // How close the player needs to be
-    public Camera playerCamera; // Assign your player camera in the inspector
-
-    [Header("Door Settings")]
-    public string DoorTag = "Door"; // Tag to identify the door
+    public float interactDistance = 3f;
+    public Camera playerCamera;
     public KeyCode interactKey = KeyCode.E;
 
+    [Header("Door Settings")]
+    public string DoorTag = "Door";
     public string LockedDoorTag = "Locked Door";
+
+    private Animator doorAnim;
+    private Collider physicalCollider;  // solid collider
+    private Collider triggerCollider;   // trigger used for raycast detection
+
+    private void Awake()
+    {
+        doorAnim = GetComponent<Animator>();
+
+        // Find colliders among children
+        foreach (var col in GetComponents<Collider>())
+        {
+            if (col.isTrigger)
+                triggerCollider = col;
+            else
+                physicalCollider = col;
+        }
+
+        if (doorAnim == null)
+            Debug.LogError("No Animator found on Door root.");
+        if (physicalCollider == null)
+            Debug.LogError("No physical collider found on door.");
+        if (triggerCollider == null)
+            Debug.LogError("No trigger collider found on door.");
+    }
 
     private void Update()
     {
+        bool isOpen = doorAnim.GetBool("IsOpened");
         if (Input.GetKeyDown(interactKey))
         {
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, interactDistance))
+            if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, ~0, QueryTriggerInteraction.Collide))
             {
                 if (hit.collider.CompareTag(DoorTag) || hit.collider.CompareTag(LockedDoorTag))
                 {
-                    Animator doorAnim = hit.collider.GetComponent<Animator>();
-                    if (doorAnim != null && hit.collider.CompareTag(LockedDoorTag))
+                    Debug.Log("Hi yo");
+
+                    if (CompareTag(LockedDoorTag))
                     {
                         doorAnim.SetTrigger("TryOpen");
                     }
-                    else if (doorAnim != null && hit.collider.CompareTag(DoorTag))
+                    else if (CompareTag(DoorTag))
                     {
-                        if (doorAnim.GetCurrentAnimatorStateInfo(0).IsName("Idle") || doorAnim.GetCurrentAnimatorStateInfo(0).IsName("Closed"))
+                        if (!isOpen)
                         {
+                            // Open
                             doorAnim.SetTrigger("OpenDoor");
                             doorAnim.ResetTrigger("CloseDoor");
+                            doorAnim.SetBool("IsOpened", true);
+
+                            // Player can pass
+                            physicalCollider.enabled = false;
+                            Debug.Log(isOpen);
                         }
-                        else if (doorAnim.GetCurrentAnimatorStateInfo(0).IsName("Open"))
+                        else
                         {
+                            // Close
                             doorAnim.SetTrigger("CloseDoor");
                             doorAnim.ResetTrigger("OpenDoor");
+                            doorAnim.SetBool("IsOpened", false);
+
+                            // Player blocked again
+                            physicalCollider.enabled = true;
+                            Debug.Log(isOpen);
                         }
                     }
                 }

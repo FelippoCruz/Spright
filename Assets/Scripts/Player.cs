@@ -4,9 +4,14 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    bool triggered = false;
+
+    [Header("Movement Settings")]
     public float speed = 5f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
+
+    [Header("Ground Check")]
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -14,40 +19,78 @@ public class Player : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
-    PlayerControls inputSystemActions;
-    InputAction move, jump;
 
-    void Start()
+    // Input System
+    private PlayerControls inputSystem;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+
+    private void Awake()
     {
         controller = GetComponent<CharacterController>();
-        inputSystemActions = new PlayerControls();
-        move = inputSystemActions.Player.Move3D;
-        jump = inputSystemActions.Player.Jump;
-        inputSystemActions.Enable();
+
+        // Create new instance of your generated InputActions class
+        inputSystem = new PlayerControls();
+
+        // Assign actions from your Input Map
+        moveAction = inputSystem.Player.Move3D;
+        jumpAction = inputSystem.Player.Jump;
     }
 
-    void Update()
+    private void OnEnable()
     {
-        // Check if grounded
+        inputSystem.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputSystem.Disable();
+    }
+
+    private void Update()
+    {
+        // --- Ground check ---
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
-            velocity.y = -2f; // Small push to keep grounded
+            velocity.y = -2f; // Keeps grounded nicely
 
-        // Movement
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        Vector3 move = transform.right * x + transform.forward * z;
+        // --- Movement ---
+        Vector2 moveInput = moveAction.ReadValue<Vector2>();
+        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
         controller.Move(move * speed * Time.deltaTime);
 
-        // Jump
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // --- Jump ---
+        if (jumpAction.WasPressedThisFrame() && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        // Apply gravity
+        // --- Gravity ---
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (triggered) return;
+
+        if (other.CompareTag("Portal"))
+        {
+            triggered = true;
+
+            int chosenIndex = (other.gameObject.name == "PortalSlade") ? 0 :
+                              (other.gameObject.name == "PortalOphelia") ? 1 : -1;
+
+            if (chosenIndex != -1)
+            {
+                CharacterChosen(chosenIndex, controller);
+            }
+        }
+    }
+    void CharacterChosen(int v, CharacterController controller)
+    {
+        PlayerPrefs.SetInt("CharacterChosen", v);
+        PlayerPrefs.Save();
+        Debug.Log(v);
     }
 }
