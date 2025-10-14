@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEditor.AddressableAssets.Build;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class UIManager : MonoBehaviour
     LevelLoader LevelLoader;
 
     [SerializeField] Button OptionsButton;
+    public bool IsPaused;
 
     void Awake()
     {
@@ -43,6 +45,7 @@ public class UIManager : MonoBehaviour
             SubtitlesBackground.SetActive(false);
         }
         OptionsPanel.SetActive(false);
+        IsPaused = false;
     }
 
     void Update()
@@ -59,36 +62,7 @@ public class UIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (KandM.activeSelf || Controller.activeSelf || Graphics.activeSelf ||
-                Audio.activeSelf || Language.activeSelf || Video.activeSelf ||
-                Accessibility.activeSelf || Extra.activeSelf)
-            {
-                KandM.SetActive(false);
-                Controller.SetActive(false);
-                Graphics.SetActive(false);
-                Audio.SetActive(false);
-                Language.SetActive(false);
-                Video.SetActive(false);
-                Accessibility.SetActive(false);
-                Extra.SetActive(false);
-                Main.SetActive(true);
-            }
-            else if (OptionsPanel.activeSelf)
-            {
-                LeaveOptions();
-            }
-            else if (PausePanel != null && PausePanel.activeSelf)
-            {
-                Resume();
-            }
-            else if (PausePanel != null && !PausePanel.activeSelf)
-            {
-                PausePanel.SetActive(true);
-                Time.timeScale = 0;
-            }
-            else {
-                Options();
-            }
+            CheckOptions();
         }
         if (PausePanel != null && OptionsPanel != null && Chatbox != null)
         {
@@ -119,6 +93,7 @@ public class UIManager : MonoBehaviour
 
     public void Resume()
     {
+        IsPaused = false;
         PausePanel.SetActive(false);
         if ((Chatbox != null && !Chatbox.activeSelf) || Chatbox == null)
         {
@@ -163,5 +138,41 @@ public class UIManager : MonoBehaviour
     void Quitted()
     {
         LevelLoader.Instance.LoadNextLevel("StartScene");
+    }
+
+    public void CheckOptions()
+    {
+        if (KandM.activeSelf || Controller.activeSelf || Graphics.activeSelf ||
+                Audio.activeSelf || Language.activeSelf || Video.activeSelf ||
+                Accessibility.activeSelf || Extra.activeSelf)
+        {
+            KandM.SetActive(false);
+            Controller.SetActive(false);
+            Graphics.SetActive(false);
+            Audio.SetActive(false);
+            Language.SetActive(false);
+            Video.SetActive(false);
+            Accessibility.SetActive(false);
+            Extra.SetActive(false);
+            Main.SetActive(true);
+        }
+        else if (OptionsPanel.activeSelf)
+        {
+            LeaveOptions();
+        }
+        else if (PausePanel != null && PausePanel.activeSelf)
+        {
+            Resume();
+        }
+        else if (PausePanel != null && !PausePanel.activeSelf)
+        {
+            PausePanel.SetActive(true);
+            Time.timeScale = 0;
+            IsPaused = true;
+        }
+        else
+        {
+            Options();
+        }
     }
 }

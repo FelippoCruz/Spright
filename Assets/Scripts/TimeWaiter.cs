@@ -64,7 +64,7 @@ public class TimeWaiter : MonoBehaviour
     IEnumerator Wait2()
     {
         yield return new WaitForSeconds(Time2);
-        LevelLoader.Instance.LoadNextLevel("GameScene");
+        LevelLoader.Instance.LoadNextLevel("3DTutorialScene");
     }
 
     void OnInputSubmit(string input)

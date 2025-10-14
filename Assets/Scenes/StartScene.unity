@@ -1241,6 +1241,7 @@ MonoBehaviour:
   Accessibility: {fileID: 550176042}
   Extra: {fileID: 1749952308}
   OptionsButton: {fileID: 1671910599}
+  IsPaused: 0
 --- !u!1 &550176042 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6953572366301613717, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
@@ -1951,6 +1952,22 @@ PrefabInstance:
     - target: {fileID: 7722259114624041437, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904643013632406794, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 455527007}
+    - target: {fileID: 7904643013632406794, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CheckOptions
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904643013632406794, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904643013632406794, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7961438455973556427, guid: e6e20beb7d81f61468882cc03975fdf7, type: 3}
       propertyPath: globalVolume

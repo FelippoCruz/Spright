@@ -25,8 +25,6 @@ public class Player : MonoBehaviour
     private InputAction moveAction;
     private InputAction jumpAction;
 
-    LevelLoader LevelLoader;
-
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -71,11 +69,6 @@ public class Player : MonoBehaviour
         // --- Gravity ---
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-
-        if (Input.GetKeyDown(KeyCode.F10))
-        {
-            LevelLoader.LoadNextLevel("StartScene");
-        }
     }
     void OnTriggerEnter(Collider other)
     {

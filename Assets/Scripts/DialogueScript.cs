@@ -44,6 +44,7 @@ public class DialogueScript : MonoBehaviour
     public static event System.Action OnEndDialogueCalled;
 
     [SerializeField] GameObject NPC;
+    [SerializeField] UIManager UI;
 
     IEnumerator Start()
     {
@@ -82,9 +83,16 @@ public class DialogueScript : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
+        // --- Multiple input options (Mouse, E, Space)
+        bool inputPressed = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space);
+
+        if (!inputPressed) return;
         if (IsClickOnUIButton()) return;
-        if (!IsClickValid()) return;
+
+        // --- Prevent advancing when game is paused
+        if (GameIsPaused()) return;
+
+        // --- Removed IsClickValid() check entirely
 
         if (showingNameLine)
         {
@@ -116,6 +124,12 @@ public class DialogueScript : MonoBehaviour
         }
     }
 
+    // --- Helper to detect pause (prevents skip when game paused)
+    bool GameIsPaused()
+    {
+        return UI.IsPaused;
+    }
+
     bool IsClickOnUIButton()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current)
@@ -129,54 +143,6 @@ public class DialogueScript : MonoBehaviour
         {
             if (result.gameObject.GetComponent<Button>() != null)
                 return true;
-        }
-        return false;
-    }
-
-    bool IsClickValid()
-    {
-        PointerEventData pointerData = new PointerEventData(EventSystem.current)
-        {
-            position = Input.mousePosition
-        };
-        var results = new System.Collections.Generic.List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerData, results);
-
-        int uiLayer = LayerMask.NameToLayer("UI");
-
-        if (results.Count == 0)
-            return true;
-
-        foreach (var result in results)
-        {
-            GameObject hitObj = result.gameObject;
-
-            if (hitObj.layer != uiLayer)
-            {
-                return true;
-            }
-            else
-            {
-                if (IsGameObjectOrChild(hitObj, portraitImage))
-                    return true;
-
-                if (IsGameObjectOrChild(hitObj, dialogueText.gameObject))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    bool IsGameObjectOrChild(GameObject obj, GameObject parentObj)
-    {
-        if (obj == parentObj) return true;
-
-        Transform t = obj.transform;
-        while (t != null)
-        {
-            if (t.gameObject == parentObj)
-                return true;
-            t = t.parent;
         }
         return false;
     }
@@ -206,7 +172,7 @@ public class DialogueScript : MonoBehaviour
 
     IEnumerator TypePlayerName()
     {
-        OnPlayerNameCalled?.Invoke(); // Trigger event
+        OnPlayerNameCalled?.Invoke();
         dialogueText.text = string.Empty;
         string line = playerName + "?";
         foreach (char c in line)
@@ -218,7 +184,7 @@ public class DialogueScript : MonoBehaviour
 
     IEnumerator TypeLocalizedLine()
     {
-        OnTypeCalled?.Invoke(); // Trigger event
+        OnTypeCalled?.Invoke();
         isTyping = true;
         currentFullLine = "";
         bool lineReady = false;
@@ -261,7 +227,7 @@ public class DialogueScript : MonoBehaviour
 
     void EndDialogue()
     {
-        OnEndDialogueCalled?.Invoke(); // Trigger event
+        OnEndDialogueCalled?.Invoke();
         if (portraitImage) portraitImage.SetActive(false);
         Time.timeScale = 1f;
         NPC.SetActive(false);

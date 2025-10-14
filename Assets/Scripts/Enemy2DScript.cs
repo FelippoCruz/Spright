@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Required for using Coroutines
 
 public class Enemy2DScript : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class Enemy2DScript : MonoBehaviour
 
     [Header("References")]
     [SerializeField] Transform player;
+    // New: Reference to the enemy's renderer (MeshRenderer or SpriteRenderer)
+    private Renderer enemyRenderer;
+    private Color originalColor;
 
     [Header("Settings")]
     [SerializeField] float detectionRange = 15f;
@@ -14,9 +18,15 @@ public class Enemy2DScript : MonoBehaviour
     [SerializeField] float moveSpeed = 3f;
     [SerializeField] float attackCooldown = 1.5f;
 
-    [Header("Health")]
+    [Header("Health & Damage Flash")]
     [SerializeField] float maxHealth = 5;
     float currentHealth;
+    // New: Color to flash to when taking damage
+    [SerializeField] Color damageFlashColor = Color.red;
+    // New: How long the damage color flash lasts (in seconds)
+    [SerializeField] float flashDuration = 0.15f;
+    private Coroutine flashRoutine;
+
 
     [Header("Bullet")]
     [SerializeField] GameObject bulletPrefab;
@@ -29,6 +39,19 @@ public class Enemy2DScript : MonoBehaviour
 
     void Start()
     {
+        // New: Get the Renderer component and store the initial color
+        enemyRenderer = GetComponentInChildren<Renderer>();
+        if (enemyRenderer != null)
+        {
+            // Store the initial color of the enemy's material
+            originalColor = enemyRenderer.material.color;
+        }
+        else
+        {
+            Debug.LogError("Enemy2DScript: Renderer component not found on this object or its children. Cannot apply damage color flash.");
+        }
+
+
         if (!player)
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -99,6 +122,53 @@ public class Enemy2DScript : MonoBehaviour
             Die();
         }
     }
+
+    // Original TakeDamage method has been modified
+    public void TakeDamage(int amount)
+    {
+        if (isDead) return;
+
+        // --- Damage Logic ---
+        currentHealth -= amount;
+
+        // --- Visual Feedback Logic (New) ---
+        if (enemyRenderer != null)
+        {
+            // Stop any existing flash routine to prevent flickering issues
+            if (flashRoutine != null)
+            {
+                StopCoroutine(flashRoutine);
+            }
+            // Start the new flash routine
+            flashRoutine = StartCoroutine(DamageFlash());
+        }
+
+        // --- Death Logic ---
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    /// <summary>
+    /// Coroutine to handle the damage flash effect.
+    /// </summary>
+    IEnumerator DamageFlash()
+    {
+        // 1. Flash to the damage color
+        enemyRenderer.material.color = damageFlashColor;
+
+        // 2. Wait for the duration of the flash
+        yield return new WaitForSeconds(flashDuration);
+
+        // 3. Revert to the original color
+        enemyRenderer.material.color = originalColor;
+
+        // Clear the coroutine reference
+        flashRoutine = null;
+    }
+
+
     void MoveTowardsPlayer(Vector3 enemyXZ, Vector3 playerXZ)
     {
         Vector3 dir = (playerXZ - enemyXZ).normalized;
@@ -144,17 +214,6 @@ public class Enemy2DScript : MonoBehaviour
         {
             Quaternion lookRot = Quaternion.LookRotation(dir, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
-        }
-    }
-
-    public void TakeDamage(int amount)
-    {
-        if (isDead) return;
-
-        currentHealth -= amount;
-        if (currentHealth <= 0)
-        {
-            Die();
         }
     }
 

@@ -6,6 +6,7 @@ public class Door : MonoBehaviour
     public float interactDistance = 3f;
     public Camera playerCamera;
     public KeyCode interactKey = KeyCode.E;
+    [SerializeField] GameObject EPrompt;
 
     [Header("Door Settings")]
     public string DoorTag = "Door";
@@ -79,6 +80,21 @@ public class Door : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            EPrompt.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            EPrompt.SetActive(false);
         }
     }
 }
