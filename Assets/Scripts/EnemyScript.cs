@@ -43,6 +43,11 @@ public class EnemyScript : MonoBehaviour
     [Header("UI")]
     [SerializeField] Vector3 healthBarOffset = new Vector3(0, 2f, 0);
 
+    [Header("Audio")]
+    [SerializeField] AudioClip hitSound;
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] AudioSource audioSource;
+
     Vector3[] patrolPoints = new Vector3[2];
     int patrolIndex = 0;
     float lastAttackTime = 0f;
@@ -56,6 +61,8 @@ public class EnemyScript : MonoBehaviour
     {
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
         isCirclingRight = Random.value > 0.5f;
 
         randomOffset = new Vector3(
@@ -254,6 +261,8 @@ public class EnemyScript : MonoBehaviour
         if (isDead) return;
 
         if (bloodSplashParticle != null) { bloodSplashParticle.Play(); }
+        if (hitSound != null && audioSource != null)
+            audioSource.PlayOneShot(hitSound);
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
@@ -269,9 +278,21 @@ public class EnemyScript : MonoBehaviour
         if (isDead) return;
 
         isDead = true;
+
+        // Stop movement and set death state
         agent.isStopped = true;
         SwitchState(EnemyState.Dead);
         anim.SetTrigger("IsDead");
+
+        // Play death sound
+        float deathSoundDuration = 0f;
+        if (deathSound != null && audioSource != null)
+        {
+            audioSource.pitch = 1f;
+            audioSource.PlayOneShot(deathSound);
+            deathSoundDuration = deathSound.length;
+        }
+
         // Tell player to clear lock-on immediately
         Player3DScript playerScript = FindAnyObjectByType<Player3DScript>();
         if (playerScript != null)
@@ -279,6 +300,7 @@ public class EnemyScript : MonoBehaviour
             playerScript.ClearLockOnIfTarget(transform);
         }
 
+        // Notify spawner
         if (spawner != null)
         {
             spawner.Notify3DEnemyDied(this.gameObject);
@@ -286,7 +308,10 @@ public class EnemyScript : MonoBehaviour
 
         Debug.Log("Enemy died.");
         OnDeath?.Invoke();
-        Destroy(gameObject, 1.5f); // Keep the object for animations before destroying
+
+        // Wait for both animation and sound before destroying
+        float destroyDelay = Mathf.Max(1.5f, deathSoundDuration);
+        Destroy(gameObject, destroyDelay);
     }
 
     void SwitchState(EnemyState state)

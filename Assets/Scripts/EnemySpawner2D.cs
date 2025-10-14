@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class EnemySpawner2D : MonoBehaviour
@@ -19,6 +20,12 @@ public class EnemySpawner2D : MonoBehaviour
     [Header("Spawner ID (Must be unique!)")]
     [SerializeField] private string spawnerID;
 
+    [Header("Alarm Settings")]
+    [SerializeField] private GameObject alarmUI;        // Alarm visual (starts inactive)
+    [SerializeField] private AudioSource alarmAudio;    // AudioSource to play alarm sound
+    [SerializeField] private float alarmFlashDuration = 0.4f; // How long alarm stays active per flash
+    [SerializeField] private float alarmDelayBetweenFlashes = 0.2f; // Delay between flashes
+
     private int alive2DEnemies = 0;
     private bool isActive = true;
 
@@ -33,6 +40,8 @@ public class EnemySpawner2D : MonoBehaviour
             Debug.LogWarning($"[EnemySpawner2D] Auto-generated ID: {spawnerID}");
         }
 #endif
+        if (alarmUI != null)
+            alarmUI.SetActive(false);
     }
 
     public string SpawnerID => spawnerID;
@@ -47,7 +56,12 @@ public class EnemySpawner2D : MonoBehaviour
         Vector2 offset = new(UnityEngine.Random.Range(-maxOffset, maxOffset), UnityEngine.Random.Range(-maxOffset, maxOffset));
         Vector3 spawnPosition = spawnPoint.position + (Vector3)offset;
 
-        return SpawnEnemyAtPosition(spawnPosition);
+        GameObject enemy = SpawnEnemyAtPosition(spawnPosition);
+
+        if (enemy != null)
+            TriggerAlarm(); // Every time enemies spawn, alarm triggers
+
+        return enemy;
     }
 
     public GameObject SpawnEnemyAtPosition(Vector3 position)
@@ -105,5 +119,33 @@ public class EnemySpawner2D : MonoBehaviour
 
         spawnedEnemies.Clear();
         alive2DEnemies = 0;
+    }
+
+    // Alarm Coroutine
+    private void TriggerAlarm()
+    {
+        if (alarmUI == null && alarmAudio == null) return;
+        StopAllCoroutines(); // In case a previous alarm is still running
+        StartCoroutine(AlarmRoutine());
+    }
+
+    private IEnumerator AlarmRoutine()
+    {
+        // Two flashes
+        for (int i = 0; i < 2; i++)
+        {
+            if (alarmAudio != null)
+                alarmAudio.Play();
+
+            if (alarmUI != null)
+                alarmUI.SetActive(true);
+
+            yield return new WaitForSeconds(alarmFlashDuration);
+
+            if (alarmUI != null)
+                alarmUI.SetActive(false);
+
+            yield return new WaitForSeconds(alarmDelayBetweenFlashes);
+        }
     }
 }
