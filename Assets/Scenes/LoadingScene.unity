@@ -460,14 +460,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21752dc81e5edcc41885881d583df57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Time: 20
-  Time2: 5
-  subtitleDelay: 7
+  subtitleDelay: 1
+  sceneChangeDelay: 5
+  fadeDuration: 0.5
+  audioFadeDuration: 1
+  backgroundFadeDuration: 0.75
   subtitlesManager: {fileID: 1068983821}
-  specialObject: {fileID: 1323422720}
-  specialDuration: 2
+  localizedAudioPlayer: {fileID: 455527006}
   inputField: {fileID: 7874568463432896970}
-  PlayerInput: 
+  subtitleBackground: {fileID: 0}
 --- !u!82 &455527004
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1068,6 +1069,7 @@ GameObject:
   - component: {fileID: 1068983823}
   - component: {fileID: 1068983822}
   - component: {fileID: 1068983821}
+  - component: {fileID: 1068983824}
   m_Layer: 5
   m_Name: Subtitles
   m_TagString: Untagged
@@ -1116,6 +1118,7 @@ MonoBehaviour:
   - CharacterCustomization2
   - CharacterCustomization3
   - CharacterCustomization4
+  typingFinished: 0
 --- !u!114 &1068983822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1154,6 +1157,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1068983819}
   m_CullTransparentMesh: 1
+--- !u!225 &1068983824
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068983819}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1111453596
 GameObject:
   m_ObjectHideFlags: 0

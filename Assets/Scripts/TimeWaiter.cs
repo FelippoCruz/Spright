@@ -2,57 +2,69 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
-using UnityEngine.UI;
 
 public class TimeWaiter : MonoBehaviour
 {
     [Header("Timing Settings")]
-    [SerializeField] float subtitleDelay = 1f; // delay between lines
-    [SerializeField] float sceneChangeDelay = 5f; // delay after submitting input
-    [SerializeField] float fadeDuration = 0.5f;   // fade time for skip
+    [SerializeField] float subtitleDelay = 1f;     // Pause between lines
+    [SerializeField] float sceneChangeDelay = 5f;  // Delay after input before changing scene
+    [SerializeField] float fadeDuration = 0.5f;    // Fade speed for skip effects
+    [SerializeField] float audioFadeDuration = 1f; // Separate from text fade speed
+    [SerializeField] float backgroundFadeDuration = 0.75f; // speed of background fade in/out
+
 
     [Header("References")]
     [SerializeField] SubtitlesManager subtitlesManager;
     [SerializeField] LocalizedAudioPlayer localizedAudioPlayer;
     [SerializeField] TMP_InputField inputField;
-    [SerializeField] GameObject subtitleBackground; // auto-linked from subtitlesManager
+    [SerializeField] GameObject subtitleBackground;
 
-    private string playerInput;
     private AudioSource audioSource;
+    private string playerInput;
+
     private bool skipCurrentLine = false;
     private bool skipAll = false;
     private bool isFading = false;
 
     void Start()
     {
-        // Auto-assign subtitle background from SubtitlesManager
         if (subtitlesManager != null && subtitlesManager.backgroundImage != null)
             subtitleBackground = subtitlesManager.backgroundImage;
 
         inputField.gameObject.SetActive(false);
         audioSource = localizedAudioPlayer.GetComponent<AudioSource>();
+
         StartCoroutine(PlayIntroSequence());
     }
 
     IEnumerator PlayIntroSequence()
     {
-        for (int i = 0; i < 4; i++)
+        // Fade in background once
+        yield return StartCoroutine(FadeInBackground());
+
+        int totalLines = 4; // or subtitlesManager.lineKeys.Length if dynamic
+        for (int i = 0; i < totalLines; i++)
         {
             if (skipAll) break;
 
+            // Reset and show subtitle text
             subtitlesManager.ResetText();
             subtitlesManager.ShowSubtitle(i);
 
+            // Play audio and fade-in text simultaneously
             yield return StartCoroutine(PlaySubtitleAndAudio(i));
 
             if (skipAll) break;
 
+            // Wait subtitleDelay before next line, but keep background visible
             yield return new WaitForSecondsRealtime(subtitleDelay);
-            subtitlesManager.EndSubtitles();
         }
 
-        // End all and show input field
-        subtitlesManager.EndSubtitles();
+        // Fade out background at the very end
+        yield return StartCoroutine(FadeOutBackground());
+
+        // Show input field after everything
+        subtitlesManager.ResetText(); // just to be sure text is cleared
         inputField.gameObject.SetActive(true);
         inputField.onSubmit.AddListener(OnInputSubmit);
     }
@@ -62,31 +74,50 @@ public class TimeWaiter : MonoBehaviour
         skipCurrentLine = false;
         isFading = false;
 
+        // Start monitoring input for skipping
+        Coroutine inputMonitor = StartCoroutine(SkipInputMonitor());
+
+        // Start audio and text
         Coroutine audioRoutine = StartCoroutine(PlayLocalizedClipAtIndex(index));
-        Coroutine subtitleRoutine = StartCoroutine(subtitlesManager.WaitForTypingComplete());
-        Coroutine inputCheck = StartCoroutine(SkipInputMonitor());
+        Coroutine fadeInRoutine = StartCoroutine(FadeInText());
 
-        while (!skipCurrentLine && !skipAll && (audioSource.isPlaying || subtitleRoutine != null))
-        {
-            if (!audioSource.isPlaying && subtitleRoutine == null) break;
+        // Wait until typing + audio are finished or player skips
+        while (!skipCurrentLine && !skipAll && (audioSource.isPlaying || !IsTypingDone()))
             yield return null;
-        }
 
-        StopCoroutine(inputCheck);
+        StopCoroutine(inputMonitor);
 
-        if (skipCurrentLine || skipAll)
+        if (skipCurrentLine && !skipAll)
         {
-            yield return FadeOutAudioAndSubtitle();
+            // Immediately stop typing
+            subtitlesManager.SkipTyping();
+
+            // Fade text only
+            yield return StartCoroutine(FadeOutText());
         }
+        else if (skipAll)
+        {
+            subtitlesManager.SkipTyping();
+            // Fade text and background immediately
+            yield return StartCoroutine(FadeOutText());
+            yield return StartCoroutine(FadeOutBackground());
+        }
+        else
+        {
+            // Normal playback finished, just fade out text
+            yield return StartCoroutine(FadeOutText());
+        }
+
+        // Reset text, keep background active
+        subtitlesManager.ResetText();
     }
 
     IEnumerator PlayLocalizedClipAtIndex(int index)
     {
-        var init = LocalizationSettings.InitializationOperation;
-        yield return init;
+        yield return LocalizationSettings.InitializationOperation;
 
         AudioClip[] clips = GetLocalizedClips();
-        if (clips == null || index < 0 || index >= clips.Length) yield break;
+        if (clips == null || index >= clips.Length) yield break;
 
         AudioClip clip = clips[index];
         if (clip == null) yield break;
@@ -128,84 +159,137 @@ public class TimeWaiter : MonoBehaviour
                     yield break;
                 }
             }
-            else
-            {
-                escHoldTime = 0f;
-            }
+            else escHoldTime = 0f;
 
             yield return null;
         }
     }
 
-    IEnumerator FadeOutAudioAndSubtitle()
+    IEnumerator FadeOutText()
     {
         if (isFading) yield break;
         isFading = true;
 
-        float startVolume = audioSource.volume;
-        float time = 0f;
+        var text = subtitlesManager.GetComponentInChildren<TextMeshProUGUI>();
+        if (text == null) { isFading = false; yield break; }
 
-        // Prepare subtitle fade
-        Color textColor = subtitlesManager.GetComponentInChildren<TextMeshProUGUI>().color;
-        Color bgColor = subtitleBackground != null ? subtitleBackground.color : Color.clear;
+        Color original = text.color;
+        float startAlpha = original.a;
+        float time = 0f;
 
         while (time < fadeDuration)
         {
             float t = time / fadeDuration;
+            Color faded = original;
+            faded.a = Mathf.Lerp(startAlpha, 0f, t);
+            text.color = faded;
 
-            if (audioSource.isPlaying)
-                audioSource.volume = Mathf.Lerp(startVolume, 0f, t);
-
-            var txt = subtitlesManager.GetComponentInChildren<TextMeshProUGUI>();
-            if (txt != null)
-            {
-                Color c = txt.color;
-                c.a = Mathf.Lerp(textColor.a, 0f, t);
-                txt.color = c;
-            }
-
-            if (subtitleBackground != null)
-            {
-                Color c = subtitleBackground.color;
-                c.a = Mathf.Lerp(bgColor.a, 0f, t);
-                subtitleBackground.color = c;
-            }
+            // Fade audio if playing
+            if (audioSource != null && audioSource.isPlaying)
+                audioSource.volume = Mathf.Lerp(1f, 0f, t);
 
             time += Time.unscaledDeltaTime;
             yield return null;
         }
 
-        if (audioSource.isPlaying)
+        if (audioSource != null && audioSource.isPlaying)
             audioSource.Stop();
 
-        subtitlesManager.EndSubtitles();
+        // Reset text and audio for next line
+        original.a = 1f;
+        text.color = original;
+        if (audioSource != null)
+            audioSource.volume = 1f;
 
-        var resetTxt = subtitlesManager.GetComponentInChildren<TextMeshProUGUI>();
-        if (resetTxt != null)
-        {
-            Color c = resetTxt.color;
-            c.a = 1f;
-            resetTxt.color = c;
-        }
-
-        if (subtitleBackground != null)
-        {
-            Color c = subtitleBackground.color;
-            c.a = 1f;
-            subtitleBackground.color = c;
-        }
+        isFading = false;
     }
+
+    IEnumerator FadeInText()
+    {
+        var text = subtitlesManager.GetComponentInChildren<TextMeshProUGUI>();
+        if (text == null) yield break;
+
+        Color color = text.color;
+        color.a = 0f;
+        text.color = color;
+
+        float time = 0f;
+
+        while (time < fadeDuration)
+        {
+            float t = time / fadeDuration;
+            color.a = Mathf.Lerp(0f, 1f, t);
+            text.color = color;
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        color.a = 1f;
+        text.color = color;
+    }
+
+    IEnumerator FadeOutBackground()
+    {
+        if (subtitleBackground == null) yield break;
+
+        CanvasGroup group = subtitleBackground.GetComponent<CanvasGroup>();
+        if (group == null)
+        {
+            group = subtitleBackground.AddComponent<CanvasGroup>();
+            group.alpha = 1f;
+        }
+
+        float time = 0f;
+        float startAlpha = group.alpha;
+
+        while (time < backgroundFadeDuration)
+        {
+            group.alpha = Mathf.Lerp(startAlpha, 0f, time / backgroundFadeDuration);
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        group.alpha = 0f;
+        subtitleBackground.SetActive(false);
+    }
+
+    IEnumerator FadeInBackground()
+    {
+        if (subtitleBackground == null) yield break;
+
+        CanvasGroup group = subtitleBackground.GetComponent<CanvasGroup>();
+        if (group == null)
+            group = subtitleBackground.AddComponent<CanvasGroup>();
+
+        subtitleBackground.SetActive(true);
+        group.alpha = 0f;
+
+        float time = 0f;
+        while (time < backgroundFadeDuration)
+        {
+            group.alpha = Mathf.Lerp(0f, 1f, time / backgroundFadeDuration);
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        group.alpha = 1f;
+    }
+
+    bool IsTypingDone()
+    {
+        return subtitlesManager != null && subtitlesManager.typingFinished;
+    }
+
 
     AudioClip[] GetLocalizedClips()
     {
         string code = LocalizationSettings.SelectedLocale.Identifier.Code;
-
         if (code == "pt" || code == "pt-BR")
-            return localizedAudioPlayer.GetType()
+            return typeof(LocalizedAudioPlayer)
                 .GetField("portugueseClips", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 ?.GetValue(localizedAudioPlayer) as AudioClip[];
 
-        return localizedAudioPlayer.GetType()
+        return typeof(LocalizedAudioPlayer)
             .GetField("englishClips", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.GetValue(localizedAudioPlayer) as AudioClip[];
     }
@@ -221,7 +305,6 @@ public class TimeWaiter : MonoBehaviour
             inputField.onSubmit.RemoveListener(OnInputSubmit);
             inputField.gameObject.SetActive(false);
 
-            subtitlesManager.EndSubtitles();
             StartCoroutine(LoadNextSceneAfterDelay());
         }
     }

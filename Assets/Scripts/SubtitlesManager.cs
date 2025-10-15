@@ -14,7 +14,7 @@ public class SubtitlesManager : MonoBehaviour
     [SerializeField] string[] lineKeys;
 
     Coroutine typingCoroutine;
-    bool typingFinished = false;
+    public bool typingFinished = false;
 
     void Awake()
     {
@@ -134,8 +134,20 @@ public class SubtitlesManager : MonoBehaviour
             uiManager.NotifySubtitlesSequenceCompleted();
         }
     }
+
     public void ResetText()
     {
         subtitlesText.text = string.Empty;
     }
+
+    public void SkipTyping()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        typingFinished = true; // so WaitForTypingComplete returns immediately
+    }
+
 }
