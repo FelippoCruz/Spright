@@ -676,9 +676,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 455527005}
   englishClips:
-  - {fileID: 8300000, guid: 967de3e56d90ade46b4933fd0e10ff10, type: 3}
+  - {fileID: 8300000, guid: 6b8b7db6ff10e2745b1f32ccd7731381, type: 3}
+  - {fileID: 8300000, guid: 6b8bd2845e7d2974780507a00262280f, type: 3}
+  - {fileID: 8300000, guid: 95ff5981233e4324a8b8c9ab2592dade, type: 3}
+  - {fileID: 8300000, guid: a5d75af89e6d6374e832e6280307f3b7, type: 3}
   portugueseClips:
-  - {fileID: 8300000, guid: 4d41e022c712db04e91acaf763fe57ab, type: 3}
+  - {fileID: 8300000, guid: d96b065bc7bb2cf468fe1eee91fd547f, type: 3}
+  - {fileID: 8300000, guid: 42d3c138946495a488df2de1a271cf1e, type: 3}
+  - {fileID: 8300000, guid: 992fc6f960e7da646b8ec5d8b9843412, type: 3}
+  - {fileID: 8300000, guid: 764e08cbd6f2a37448eb041bf4ea4805, type: 3}
   playOnEnable: 1
 --- !u!114 &455527007
 MonoBehaviour:
@@ -1108,6 +1114,8 @@ MonoBehaviour:
   lineKeys:
   - CharacterCustomization1
   - CharacterCustomization2
+  - CharacterCustomization3
+  - CharacterCustomization4
 --- !u!114 &1068983822
 MonoBehaviour:
   m_ObjectHideFlags: 0

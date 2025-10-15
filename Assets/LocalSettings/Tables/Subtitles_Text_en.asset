@@ -34,12 +34,20 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23091374678388736
-    m_Localized: Did you like that character customization? Good, because that's
-      a summary of how the game will be. It will be you dying... dying...
+    m_Localized: "You still think there\u2019s a way out, don\u2019t you?"
     m_Metadata:
       m_Items: []
   - m_Id: 23586073869037568
-    m_Localized: Dying...
+    m_Localized: "You keep moving\u2026 like the ground will lead somewhere new."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38492896257945600
+    m_Localized: "But it\u2019s always the same.\r\nThe same walls. The same weight.\r\nYou
+      fight, you fall, and call it progress.\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38492931263606784
+    m_Localized: "Maybe you walk just to forget you\u2019re lost."
     m_Metadata:
       m_Items: []
   references:

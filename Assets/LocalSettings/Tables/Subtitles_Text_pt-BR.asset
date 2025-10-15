@@ -34,13 +34,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23091374678388736
-    m_Localized: "Voc\xEA gostou dessa customiza\xE7\xE3o de personagem? Que bom,
-      pois esse foi um resumo de como seu jogo ser\xE1. Ser\xE1 voc\xEA morrendo...
-      morrendo..."
+    m_Localized: "\rVoc\xEA ainda acha que h\xE1 uma sa\xEDda, n\xE3o \xE9?"
     m_Metadata:
       m_Items: []
   - m_Id: 23586073869037568
-    m_Localized: Morrendo...
+    m_Localized: "Voc\xEA continua se movendo... como se o ch\xE3o fosse levar a
+      um novo lugar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38492896257945600
+    m_Localized: "Mas \xE9 sempre a mesma coisa.\r\nAs mesmas paredes. O mesmo peso.\r\nVoc\xEA
+      luta, cai e chama isso de progresso."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38492931263606784
+    m_Localized: "Talvez voc\xEA caminhe s\xF3 para esquecer que est\xE1 perdido."
     m_Metadata:
       m_Items: []
   references:

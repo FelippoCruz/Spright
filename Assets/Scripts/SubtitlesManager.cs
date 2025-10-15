@@ -6,7 +6,7 @@ using System.Collections;
 public class SubtitlesManager : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI subtitlesText;
-    [SerializeField] GameObject backgroundImage;
+    public GameObject backgroundImage;
 
     [SerializeField] float typingSpeed = 0.05f;
 
