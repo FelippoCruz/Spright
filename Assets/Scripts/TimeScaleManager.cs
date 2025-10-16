@@ -18,6 +18,46 @@ public class TimeScaleManager : MonoBehaviour
     private GameObject[] currentObjects3D;
     private GameObject[] currentObjects2D;
 
+    [SerializeField] GameObject alarmUI;       // The visual alarm (starts inactive)
+    [SerializeField] AudioSource alarmAudio;   // AudioSource to play alarm sound
+    [SerializeField] float alarmFlashDuration = 0.4f;      // How long each flash lasts
+    [SerializeField] float alarmDelayBetweenFlashes = 0.2f; // Delay between flashes
+
+    private Coroutine alarmCoroutine;
+
+    // Call this method to trigger the alarm
+    public void TriggerAlarm()
+    {
+        if (alarmUI == null && alarmAudio == null) return;
+
+        if (alarmCoroutine != null)
+            StopCoroutine(alarmCoroutine);
+
+        alarmCoroutine = StartCoroutine(AlarmRoutine());
+    }
+
+    // The actual alarm routine
+    private IEnumerator AlarmRoutine()
+    {
+        for (int i = 0; i < 2; i++) // Two flashes
+        {
+            if (alarmAudio != null)
+                alarmAudio.Play();
+
+            if (alarmUI != null)
+                alarmUI.SetActive(true);
+
+            yield return new WaitForSeconds(alarmFlashDuration);
+
+            if (alarmUI != null)
+                alarmUI.SetActive(false);
+
+            yield return new WaitForSeconds(alarmDelayBetweenFlashes);
+        }
+
+        alarmCoroutine = null; // Reset after done
+    }
+
     void Start()
     {
         Time.timeScale = 0f;
@@ -27,6 +67,8 @@ public class TimeScaleManager : MonoBehaviour
             Debug.LogError("Update Interval must be greater than zero. Defaulting to 0.5s.");
             updateInterval = 0.5f;
         }
+
+        TriggerAlarm();
 
         // Start the continuous counting process
         StartCoroutine(UpdateCountRoutine());

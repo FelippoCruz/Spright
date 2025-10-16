@@ -34,7 +34,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23091374678388736
-    m_Localized: "\rVoc\xEA ainda acha que h\xE1 uma sa\xEDda?"
+    m_Localized: "\rVoc\xEA ainda acha que h\xE1 uma sa\xEDda, n\xE3o \xE9?"
     m_Metadata:
       m_Items: []
   - m_Id: 23586073869037568
@@ -44,7 +44,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 38492896257945600
     m_Localized: "Mas \xE9 sempre a mesma coisa.\r\nAs mesmas paredes. O mesmo peso.\r\nVoc\xEA
-      luta, cai e chama isso de progresso."
+      luta, falha e chama isso de progresso."
     m_Metadata:
       m_Items: []
   - m_Id: 38492931263606784

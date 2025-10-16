@@ -15,6 +15,8 @@ public class LanguageSelector : MonoBehaviour
 
     void Start()
     {
+        PlayerPrefs.DeleteAll();
+
         //For Resetting Language: 
         //PlayerPrefs.DeleteKey("SelectedLanguage"); 
         //PlayerPrefs.DeleteKey("SelectedLocaleCode"); 
