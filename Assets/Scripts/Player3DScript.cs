@@ -120,6 +120,16 @@ public class Player3DScript : MonoBehaviour
     float velocitySmoothSpeed = 0f;  // required ref param for SmoothDamp
     Vector3 currentMove = Vector3.zero; // smoothed movement vector
     bool JumpAnimation = false;
+    // --- Combo System ---
+    int currentComboStep = 0;
+    float comboResetTime = 1.0f; // time to reset combo if player stops attacking
+    float comboTimer = 0f;
+    bool canReceiveNextInput = true;
+    bool attackInputQueued = false; // <- New: stores queued attack input
+    [SerializeField] float[] comboDamage; // damage per step
+    [SerializeField] string[] comboAnimations; // animation triggers per step
+    [SerializeField] private int maxComboSteps = 3; // how many attacks in combo
+    [SerializeField] float[] comboSweepAngles; // optional
 
     // Rolling
     bool isRolling = false;
@@ -127,6 +137,8 @@ public class Player3DScript : MonoBehaviour
     float rollCooldownTimer = 0f;
     Vector3 rollDirection;
     bool isInvincible = false;
+    bool rollBuffered = false;       // Was roll pressed during attack
+    bool attackBufferedDuringRoll = false; // Was attack pressed while rolling
 
     // Crouch
     bool isCrouching = false;
@@ -304,8 +316,18 @@ public class Player3DScript : MonoBehaviour
 
             MoveCharacter();
 
-            if (Input.GetMouseButtonDown(0) && !isAttacking && !onLadder && !onSlide)
-                StartAttack();
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (!isAttacking && !onLadder && !onSlide)
+                {
+                    StartAttack();
+                }
+                else
+                {
+                    // Queue the input if currently attacking
+                    attackInputQueued = true;
+                }
+            }
         }
         else
         {
@@ -326,9 +348,47 @@ public class Player3DScript : MonoBehaviour
             if (attackTimer <= 0f)
             {
                 isAttacking = false;
-                if (currentAnimator != null) { currentAnimator.ResetTrigger("IsAttacking"); }
+                if (currentAnimator != null)
+                {
+                    currentAnimator.ResetTrigger("IsAttacking");
+                    // Reset all combo animation triggers
+                    foreach (string anim in comboAnimations)
+                    {
+                        currentAnimator.ResetTrigger(anim);
+                    }
+                }
                 alreadyHit.Clear();
+
+                // --- Execute buffered roll ---
+                if (rollBuffered)
+                {
+                    rollBuffered = false;
+                    TryRoll();
+                }
+
+                // --- Process queued input ---
+                if (attackInputQueued)
+                {
+                    attackInputQueued = false;
+                    StartAttack(); // immediately chain next attack
+                }
             }
+        }
+
+        // --- Combo input reset ---
+        if (!canReceiveNextInput)
+        {
+            comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0f)
+            {
+                currentComboStep = 0;
+                canReceiveNextInput = true;
+            }
+        }
+        else if (isAttacking && attackTimer <= 0f)
+        {
+            // Allow next attack input after current attack ends
+            canReceiveNextInput = true;
         }
 
         if (isRunning)
@@ -868,7 +928,18 @@ public class Player3DScript : MonoBehaviour
 
     void TryRoll()
     {
+        // If attacking, buffer the roll instead of canceling
+        if (isAttacking)
+        {
+            rollBuffered = true;
+            return;
+        }
+
+        // Otherwise, do normal roll
         if (rollCooldownTimer > 0f || isRolling || !IsGrounded()) return;
+
+        // --- CANCEL ATTACK ---
+        CancelAttack();
 
         float x = Input.GetAxis("Horizontal1") * (OptionsManager.InvertX ? -1f : 1f);
         float z = Input.GetAxis("Vertical1") * (OptionsManager.InvertY ? -1f : 1f);
@@ -919,6 +990,14 @@ public class Player3DScript : MonoBehaviour
             isRolling = false;
             if (currentAnimator != null) { currentAnimator.ResetTrigger("IsRolling"); }
             isInvincible = false;
+
+            // --- Execute buffered attack ---
+            if (attackBufferedDuringRoll)
+            {
+                attackBufferedDuringRoll = false;
+                StartAttack();
+            }
+
         }
     }
 
@@ -940,14 +1019,47 @@ public class Player3DScript : MonoBehaviour
 
     void StartAttack()
     {
+        if (!canReceiveNextInput) return;
+
         isAttacking = true;
-        if (currentAnimator != null) { currentAnimator.SetTrigger("IsAttacking"); }
         attackTimer = attackDuration;
         alreadyHit.Clear();
+
+        // --- Play combo animation ---
+        if (currentAnimator != null && comboAnimations.Length > 0)
+        {
+            string animTrigger = comboAnimations[currentComboStep % comboAnimations.Length];
+            currentAnimator.SetTrigger(animTrigger);
+        }
+
+        // --- Set damage for this step ---
+        if (comboDamage.Length > 0)
+        {
+            damageAmount = comboDamage[currentComboStep % comboDamage.Length];
+        }
+
+        // Prepare for next combo step
+        currentComboStep++;
+        canReceiveNextInput = false;
+        comboTimer = comboResetTime;
     }
 
     void PerformSweepingAttack(float progress)
     {
+        if (comboDamage == null || comboDamage.Length == 0) return;
+
+        // --- Interrupt combo if rolling ---
+        if (isRolling)
+        {
+            isAttacking = false;
+            canReceiveNextInput = true; // allow next attack after roll
+            alreadyHit.Clear();
+            currentComboStep = 0;
+            attackBufferedDuringRoll = true; // Buffer attack to happen after roll
+            return;
+        }
+
+        // Sweep angle for the attack
         currentSweepAngle = sweepRightToLeft
             ? Mathf.Lerp(attackAngle / 2f, -attackAngle / 2f, progress)
             : Mathf.Lerp(-attackAngle / 2f, attackAngle / 2f, progress);
@@ -958,16 +1070,16 @@ public class Player3DScript : MonoBehaviour
         Ray ray = new Ray(attackOrigin.position, direction);
         if (Physics.SphereCast(ray, 0.5f, out RaycastHit hit, attackRange))
         {
-            Debug.Log("Attacc");
             if (!alreadyHit.Contains(hit.collider))
             {
-                Debug.Log("Found somth");
+                float dmg = comboDamage[Mathf.Clamp(currentComboStep, 0, comboDamage.Length - 1)];
+
                 if (hit.transform.CompareTag("Enemy"))
                 {
                     var enemy = hit.transform.GetComponent<EnemyScript>();
                     if (enemy != null)
                     {
-                        enemy.TakeDamage(damageAmount);
+                        enemy.TakeDamage(dmg);
                         alreadyHit.Add(hit.collider);
                     }
                 }
@@ -976,16 +1088,49 @@ public class Player3DScript : MonoBehaviour
                     var spawner = hit.transform.GetComponent<EnemySpawner>();
                     if (spawner != null)
                     {
-                        spawner.TakeDamage(Mathf.RoundToInt(damageAmount));
+                        spawner.TakeDamage(Mathf.RoundToInt(dmg));
                         alreadyHit.Add(hit.collider);
                     }
                 }
                 else if (hit.transform.CompareTag("AttackWall"))
                 {
-                    Debug.Log("AttaccWall Identifid");
                     Destroy(hit.collider.gameObject);
                     alreadyHit.Add(hit.collider);
                 }
+            }
+        }
+
+        // Move to next combo step if attack completed
+        if (progress >= 1f)
+        {
+            currentComboStep++;
+            if (currentComboStep >= maxComboSteps)
+            {
+                currentComboStep = 0; // reset combo
+            }
+            isAttacking = false; // allow next attack input
+        }
+    }
+
+    void CancelAttack()
+    {
+        if (!isAttacking) return;
+
+        isAttacking = false;
+        alreadyHit.Clear();
+        currentComboStep = 0;
+        comboTimer = 0f;
+        canReceiveNextInput = true;
+        rollBuffered = false; // clear roll buffer if attack canceled
+
+        if (currentAnimator != null)
+        {
+            currentAnimator.ResetTrigger("IsAttacking");
+
+            // Reset all combo animation triggers
+            foreach (string anim in comboAnimations)
+            {
+                currentAnimator.ResetTrigger(anim);
             }
         }
     }
