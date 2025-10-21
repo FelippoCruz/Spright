@@ -370,12 +370,14 @@ public class Player3DScript : MonoBehaviour
                 if (attackInputQueued)
                 {
                     attackInputQueued = false;
-                    StartAttack(); // immediately chain next attack
+                    // force next attack immediately (bypass canReceiveNextInput guard)
+                    StartAttack(true);
                 }
             }
         }
 
         // --- Combo input reset ---
+        // Decrease combo reset timer when we are gating inputs
         if (!canReceiveNextInput)
         {
             comboTimer -= Time.deltaTime;
@@ -385,9 +387,10 @@ public class Player3DScript : MonoBehaviour
                 canReceiveNextInput = true;
             }
         }
-        else if (isAttacking && attackTimer <= 0f)
+
+        // Always allow the next input as soon as the attack finished (avoid 'else if' trap)
+        if (isAttacking && attackTimer <= 0f)
         {
-            // Allow next attack input after current attack ends
             canReceiveNextInput = true;
         }
 
@@ -1017,29 +1020,34 @@ public class Player3DScript : MonoBehaviour
         return camForward * input.z + camRight * input.x;
     }
 
-    void StartAttack()
+    // Allow forcing the start (used when we process a queued input immediately after an attack)
+    void StartAttack(bool force = false)
     {
-        if (!canReceiveNextInput) return;
+        // If we are not allowed to receive the next input and this is not a forced start, bail out
+        if (!canReceiveNextInput && !force) return;
 
         isAttacking = true;
         attackTimer = attackDuration;
         alreadyHit.Clear();
 
         // --- Play combo animation ---
-        if (currentAnimator != null && comboAnimations.Length > 0)
+        if (currentAnimator != null && comboAnimations != null && comboAnimations.Length > 0)
         {
-            string animTrigger = comboAnimations[currentComboStep % comboAnimations.Length];
+            // make sure index is valid
+            int animIndex = Mathf.Clamp(currentComboStep, 0, comboAnimations.Length - 1);
+            string animTrigger = comboAnimations[animIndex];
             currentAnimator.SetTrigger(animTrigger);
         }
 
         // --- Set damage for this step ---
-        if (comboDamage.Length > 0)
+        if (comboDamage != null && comboDamage.Length > 0)
         {
-            damageAmount = comboDamage[currentComboStep % comboDamage.Length];
+            int dmgIndex = Mathf.Clamp(currentComboStep, 0, comboDamage.Length - 1);
+            damageAmount = comboDamage[dmgIndex];
         }
 
-        // Prepare for next combo step
-        currentComboStep++;
+        // Prepare for next combo step window (we DO NOT increment the combo step here;
+        // increment happens when the attack completes so indexes remain consistent)
         canReceiveNextInput = false;
         comboTimer = comboResetTime;
     }
