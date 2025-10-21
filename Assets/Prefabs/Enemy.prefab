@@ -538,7 +538,7 @@ MonoBehaviour:
   attackRange: 2
   moveSpeed: 4
   patrolOffset: 25
-  circlingRadius: 3
+  circlingRadius: 2.5
   attackCooldown: 2
   damageToPlayer: 10
   attackWindup: 0.3
@@ -550,12 +550,20 @@ MonoBehaviour:
   - Heavy
   heavyAttackPause: 0.5
   circlingOffset: 3
+  repositionInterval: 3
+  repositionJitter: 1
+  minFlankAngle: 60
+  crowdingDistance: 5
+  flankCheckInterval: 2
   maxHealth: 30
   healthBarOffset: {x: 7, y: 2, z: 0}
   hitSound: {fileID: 8300000, guid: 5fd98761dc7ae8e48b787bde5afd264f, type: 3}
   deathSound: {fileID: 8300000, guid: d6a61eb947d441b4fa58ea1baf28ab7a, type: 3}
   audioSource: {fileID: 6945237387348261913}
   bloodSplashParticle: {fileID: 1561978854879786554}
+  maxSimultaneousAttackers: 2
+  swapAttackDelay: 0.5
+  waitBeforeAttack: 0.5
 --- !u!195 &5087709364108449198
 NavMeshAgent:
   m_ObjectHideFlags: 0

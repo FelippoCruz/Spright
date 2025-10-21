@@ -29,6 +29,12 @@ public class Player3DScript : MonoBehaviour
     [SerializeField] bool sweepRightToLeft = false;
     [SerializeField, Range(0f, 1f)] float attackMoveMultiplier = 0.3f;
 
+    [Header("Attack Rate")]
+    [SerializeField] float attackCooldown = 0.8f;
+    private float attackCooldownTimer = 0f;
+    [SerializeField] float comboCooldown = 0.3f; // cooldown between combo hits in seconds
+    private float comboCooldownTimer = 0f;
+
     [Header("Lock-On")]
     [SerializeField] float lockOnRange = 15f;
     [SerializeField] CinemachineCamera virtualCamera;
@@ -320,14 +326,27 @@ public class Player3DScript : MonoBehaviour
             {
                 if (!isAttacking && !onLadder && !onSlide)
                 {
-                    StartAttack();
+                    // Prevent starting new attack if still in cooldown
+                    if (attackCooldownTimer <= 0f)
+                    {
+                        StartAttack();
+                        attackCooldownTimer = attackCooldown; // global cooldown
+                    }
                 }
-                else
+                else if (isAttacking && comboCooldownTimer <= 0f)
                 {
-                    // Queue the input if currently attacking
+                    // Queue next combo if inside combo window
                     attackInputQueued = true;
+                    comboCooldownTimer = comboCooldown; // prevent instant spam inside combo
                 }
             }
+
+            // Decrease cooldown timer
+            if (attackCooldownTimer > 0f)
+                attackCooldownTimer -= Time.deltaTime;
+
+            if (comboCooldownTimer > 0f)
+                comboCooldownTimer -= Time.deltaTime;
         }
         else
         {
@@ -1026,6 +1045,10 @@ public class Player3DScript : MonoBehaviour
         // If we are not allowed to receive the next input and this is not a forced start, bail out
         if (!canReceiveNextInput && !force) return;
 
+        // --- Prevent starting new attack if cooldown not ready (unless forced) ---
+        if (attackCooldownTimer > 0f && !force)
+            return;
+
         isAttacking = true;
         attackTimer = attackDuration;
         alreadyHit.Clear();
@@ -1033,7 +1056,6 @@ public class Player3DScript : MonoBehaviour
         // --- Play combo animation ---
         if (currentAnimator != null && comboAnimations != null && comboAnimations.Length > 0)
         {
-            // make sure index is valid
             int animIndex = Mathf.Clamp(currentComboStep, 0, comboAnimations.Length - 1);
             string animTrigger = comboAnimations[animIndex];
             currentAnimator.SetTrigger(animTrigger);
@@ -1046,10 +1068,13 @@ public class Player3DScript : MonoBehaviour
             damageAmount = comboDamage[dmgIndex];
         }
 
-        // Prepare for next combo step window (we DO NOT increment the combo step here;
-        // increment happens when the attack completes so indexes remain consistent)
+        // --- Handle combo progression ---
         canReceiveNextInput = false;
         comboTimer = comboResetTime;
+
+        // --- Apply cooldown (only if this is not a forced combo continuation) ---
+        if (!force)
+            attackCooldownTimer = attackCooldown;
     }
 
     void PerformSweepingAttack(float progress)

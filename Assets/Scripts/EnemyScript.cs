@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -32,9 +33,17 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] float heavyAttackPause = 0.7f; // seconds enemy pauses after heavy attack
 
 
+
     [Header("Circling Settings")]
     [SerializeField] float circlingOffset = 1f; // max random offset around player
     private Vector3 randomOffset; // unique offset for this enemy
+    [SerializeField] float repositionInterval = 3f; // how often they pick a new position
+    [SerializeField] float repositionJitter = 1f;   // small random offset time variation
+    private float nextRepositionTime = 0f;
+    [SerializeField] float minFlankAngle = 60f;  // minimum angle away from player's forward to be considered a flank
+    [SerializeField] float crowdingDistance = 2f; // if too close, they try to move elsewhere
+    [SerializeField] float flankCheckInterval = 1.5f; // how often to check and possibly reposition
+    private float nextFlankCheck = 0f;
 
     [Header("Health")]
     [SerializeField] float maxHealth = 100f;
@@ -56,6 +65,15 @@ public class EnemyScript : MonoBehaviour
     bool isWindingUp = false;
     [SerializeField] ParticleSystem bloodSplashParticle;
     public event System.Action OnDeath;
+
+    private static List<EnemyScript> activeEnemies = new List<EnemyScript>();
+    // Group coordination / attack queue
+    private static List<EnemyScript> currentAttackers = new List<EnemyScript>();
+    [SerializeField] int maxSimultaneousAttackers = 2;  // how many can attack at once
+    [SerializeField] float swapAttackDelay = 1.2f;       // small delay after an attacker finishes
+    [SerializeField] float waitBeforeAttack = 0.5f;      // how long queued enemy waits before trying to step up
+    private bool isQueuedToAttack = false;
+
 
     void Start()
     {
@@ -100,6 +118,8 @@ public class EnemyScript : MonoBehaviour
         {
             bloodSplashParticle.Stop();
         }
+
+        activeEnemies.Add(this);
     }
 
     void Update()
@@ -121,8 +141,29 @@ public class EnemyScript : MonoBehaviour
             case EnemyState.Chase:
                 anim.SetBool("FightState", true);
                 if (distToPlayer > detectionRange) SwitchState(EnemyState.Patrol);
-                else if (distToPlayer <= attackRange) SwitchState(EnemyState.Attack);
-                else agent.SetDestination(player.position);
+                else if (distToPlayer <= attackRange)
+                {
+                    SwitchState(EnemyState.Attack);
+                }
+                else
+                {
+                    // If we're still far from the player, approach directly (so enemies don't politely walk to their spread point)
+                    // Once near the circling radius, switch to spread/circle positioning.
+                    float approachThreshold = circlingRadius * 1.2f; // how close before we stop charging and begin to spread/circle
+                    if (distToPlayer > approachThreshold)
+                    {
+                        // go straight for the player to close distance fast
+                        if (NavMesh.SamplePosition(player.position, out NavMeshHit phit, 1f, NavMesh.AllAreas))
+                            agent.SetDestination(phit.position);
+                        else
+                            agent.SetDestination(player.position);
+                    }
+                    else
+                    {
+                        // we're close enough — use spread/circle positioning
+                        SetSpreadDestination();
+                    }
+                }
                 break;
 
             case EnemyState.Attack:
@@ -165,27 +206,75 @@ public class EnemyScript : MonoBehaviour
 
     void HandleAttack()
     {
+        if (player == null || isDead || isWindingUp) return;
+
         FaceTarget(player.position);
 
-        if (!isWindingUp)
+        // If currently retreating, just continue circling/retreating
+        if (isRetreating)
         {
-            float timeSinceLastAttack = Time.time - lastAttackTime;
+            CirclingMovement();
+            return;
+        }
 
-            if (timeSinceLastAttack >= attackCooldown)
+        // If not already among current attackers, check slot/queue
+        if (!currentAttackers.Contains(this))
+        {
+            if (currentAttackers.Count >= maxSimultaneousAttackers)
             {
-                // Start attack
-                isWindingUp = true;
-                lastAttackTime = Time.time;
-                StartCoroutine(AttackAfterDelay());
+                // Too many attacking -> queue and circle
+                if (!isQueuedToAttack)
+                {
+                    isQueuedToAttack = true;
+                    StartCoroutine(WaitForTurn());
+                }
+                CirclingMovement();
+                return;
             }
-            else if (!isRetreating)
+            else
             {
-                // Retreat if attack is on cooldown
-                StartCoroutine(RetreatFromPlayer());
+                // Take an attack slot
+                currentAttackers.Add(this);
+                isQueuedToAttack = false;
             }
         }
 
-        CirclingMovement();
+        // If ready to attack
+        float timeSinceLastAttack = Time.time - lastAttackTime;
+        if (timeSinceLastAttack >= attackCooldown)
+        {
+            isWindingUp = true;
+            lastAttackTime = Time.time;
+            StartCoroutine(AttackAfterDelay());
+        }
+        else
+        {
+            // Not ready — retreat a bit while cooling down
+            if (!isRetreating)
+            {
+                StartCoroutine(RetreatFromPlayer());
+            }
+            CirclingMovement();
+        }
+    }
+
+    IEnumerator WaitForTurn()
+    {
+        // Keep circling until a slot opens or we die
+        while (currentAttackers.Count >= maxSimultaneousAttackers && !isDead)
+        {
+            CirclingMovement();
+            yield return new WaitForSeconds(waitBeforeAttack + Random.Range(0f, 0.6f));
+        }
+
+        if (!isDead && !isWindingUp)
+        {
+            // take slot after a brief jitter
+            yield return new WaitForSeconds(Random.Range(0.05f, 0.2f));
+            if (!currentAttackers.Contains(this))
+                currentAttackers.Add(this);
+            isQueuedToAttack = false;
+        }
     }
 
     IEnumerator RetreatFromPlayer()
@@ -209,7 +298,6 @@ public class EnemyScript : MonoBehaviour
         string attackType = attackPattern[currentAttackIndex];
         currentAttackIndex = (currentAttackIndex + 1) % attackPattern.Length;
 
-        //anim.SetTrigger(attackType == "Light" ? "LightAttack" : "HeavyAttack");
         anim.SetTrigger("IsAttacking");
 
         yield return new WaitForSeconds(attackWindup);
@@ -221,28 +309,88 @@ public class EnemyScript : MonoBehaviour
             Debug.Log($"Enemy dealt {damage} damage ({attackType})!");
         }
 
+        // Heavy attack pause (breathing room)
         if (attackType == "Heavy")
         {
-            agent.isStopped = true; // stop movement
+            agent.isStopped = true;
+            anim.SetBool("IsIdle", true); // optional: uses an idle flag if your animator supports it
             yield return new WaitForSeconds(heavyAttackPause);
-            agent.isStopped = false; // resume movement
+            anim.SetBool("IsIdle", false);
+            agent.isStopped = false;
         }
 
+        // Finished attack: release slot for other enemies
         isWindingUp = false;
-        //anim.ResetTrigger(attackType == "Light" ? "LightAttack" : "HeavyAttack");
         anim.ResetTrigger("IsAttacking");
+
+        if (currentAttackers.Contains(this))
+            currentAttackers.Remove(this);
+
+        // small swap delay to let other queued enemies take over smoothly
+        yield return new WaitForSeconds(swapAttackDelay);
     }
 
     void CirclingMovement()
     {
-        Vector3 toPlayer = (transform.position - player.position).normalized;
-        Vector3 circleDir = isCirclingRight ? Vector3.Cross(Vector3.up, toPlayer) : Vector3.Cross(toPlayer, Vector3.up);
-        Vector3 target = player.position + toPlayer * circlingRadius + circleDir * circlingRadius + randomOffset;
+        if (player == null || agent == null) return;
 
-        if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        float distToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distToPlayer < crowdingDistance)
         {
-            agent.SetDestination(hit.position);
+            // Move slightly backward to make space
+            Vector3 retreatDir = (transform.position - player.position).normalized;
+            Vector3 retreatTarget = transform.position + retreatDir * 1.5f;
+
+            if (NavMesh.SamplePosition(retreatTarget, out NavMeshHit retreatHit, 2f, NavMesh.AllAreas))
+            {
+                agent.SetDestination(retreatHit.position);
+            }
+            return; // skip rest this frame
         }
+
+        // Index for even spacing
+        int index = activeEnemies.IndexOf(this);
+        if (index < 0) index = 0;
+
+        float angleOffset = (360f / Mathf.Max(activeEnemies.Count, 1)) * index;
+        Vector3 offsetCircle = Quaternion.Euler(0, angleOffset, 0) * Vector3.forward * circlingRadius;
+
+        // Reposition logic: occasionally shift to a new random offset
+        if (Time.time >= nextRepositionTime)
+        {
+            randomOffset = new Vector3(
+                Random.Range(-circlingOffset, circlingOffset),
+                0,
+                Random.Range(-circlingOffset, circlingOffset)
+            );
+
+            // Schedule next reposition
+            nextRepositionTime = Time.time + repositionInterval + Random.Range(-repositionJitter, repositionJitter);
+        }
+
+        // Occasionally check for crowding and flank reposition
+        if (Time.time >= nextFlankCheck)
+        {
+            Vector3 flankTarget = GetSmartFlankPosition();
+            if (NavMesh.SamplePosition(flankTarget, out NavMeshHit flankHit, 2f, NavMesh.AllAreas))
+            {
+                agent.SetDestination(flankHit.position);
+                FaceTarget(player.position);
+            }
+
+            nextFlankCheck = Time.time + flankCheckInterval + Random.Range(-0.3f, 0.3f);
+        }
+        else
+        {
+            // keep normal circling movement between checks
+            Vector3 target = player.position + offsetCircle + randomOffset;
+            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+                FaceTarget(player.position);
+            }
+        }
+
     }
 
     void FaceTarget(Vector3 target)
@@ -254,6 +402,80 @@ public class EnemyScript : MonoBehaviour
             Quaternion rot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 10f);
         }
+    }
+
+    void SetSpreadDestination()
+    {
+        if (player == null || agent == null) return;
+
+        // Index in the active enemy list
+        int index = activeEnemies.IndexOf(this);
+        if (index < 0) index = 0;
+
+        // Distribute enemies evenly in a circle
+        float angleOffset = (360f / Mathf.Max(activeEnemies.Count, 1)) * index;
+        float spreadRadius = Mathf.Max(circlingRadius, 2f); // how far each stands from player
+
+        // Calculate target position in a circle around player
+        Vector3 offsetCircle = Quaternion.Euler(0, angleOffset, 0) * Vector3.forward * spreadRadius;
+
+        // Add a small personal random offset to avoid robotic symmetry
+        Vector3 noise = new Vector3(
+            Random.Range(-0.5f, 0.5f),
+            0,
+            Random.Range(-0.5f, 0.5f)
+        );
+
+        Vector3 target = player.position + offsetCircle + noise;
+
+        if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+    }
+
+    Vector3 GetSmartFlankPosition()
+    {
+        if (player == null) return transform.position;
+
+        // Calculate the direction from player to this enemy
+        Vector3 toEnemy = (transform.position - player.position).normalized;
+
+        // Calculate if too many enemies are in front of the player
+        int frontCount = 0;
+        foreach (var enemy in activeEnemies)
+        {
+            if (enemy == null || enemy == this) continue;
+
+            Vector3 toOther = (enemy.transform.position - player.position).normalized;
+            float angleToForward = Vector3.Angle(player.forward, toOther);
+
+            // If within a forward cone, count as "in front"
+            if (angleToForward < minFlankAngle) frontCount++;
+        }
+
+        // If too many in front, this one should move to flank
+        if (frontCount >= Mathf.Max(2, activeEnemies.Count / 3))
+        {
+            // pick a flank angle (left or right randomly)
+            float flankAngle = Random.value > 0.5f ? 90f : -90f;
+            Vector3 flankDir = Quaternion.Euler(0, flankAngle, 0) * player.forward;
+            Vector3 flankPos = player.position + flankDir * circlingRadius * 1.2f;
+
+            if (NavMesh.SamplePosition(flankPos, out NavMeshHit flankHit, 2f, NavMesh.AllAreas))
+            {
+                return flankHit.position;
+            }
+        }
+
+        // Default: normal circle position
+        int index = activeEnemies.IndexOf(this);
+        if (index < 0) index = 0;
+        float angleOffset = (360f / Mathf.Max(activeEnemies.Count, 1)) * index;
+        Vector3 offsetCircle = Quaternion.Euler(0, angleOffset, 0) * Vector3.forward * circlingRadius;
+        Vector3 defaultPos = player.position + offsetCircle + randomOffset;
+
+        return defaultPos;
     }
 
     public void TakeDamage(float amount)
@@ -278,6 +500,8 @@ public class EnemyScript : MonoBehaviour
         if (isDead) return;
 
         isDead = true;
+        activeEnemies.Remove(this);
+        currentAttackers.Remove(this);
 
         // Stop movement and set death state
         agent.isStopped = true;
@@ -314,6 +538,18 @@ public class EnemyScript : MonoBehaviour
         Destroy(gameObject, destroyDelay);
     }
 
+    void OnDisable()
+    {
+        activeEnemies.Remove(this);
+        currentAttackers.Remove(this);
+    }
+
+    void OnDestroy()
+    {
+        activeEnemies.Remove(this);
+        currentAttackers.Remove(this);
+    }
+
     void SwitchState(EnemyState state)
     {
         currentState = state;
@@ -333,6 +569,9 @@ public class EnemyScript : MonoBehaviour
 
             case EnemyState.Attack:
                 agent.isStopped = false;
+                // Allow this enemy to attempt an immediate attack when entering the Attack state
+                // (sets lastAttackTime so timeSinceLastAttack >= attackCooldown)
+                lastAttackTime = Time.time - attackCooldown;
                 break;
 
             case EnemyState.Dead:
