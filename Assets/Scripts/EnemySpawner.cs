@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private string spawnerID;
 
     private float nextSpawnTime;
-    private bool isActive = true;
+    public bool isActive = true;
 
     private class EnemyPairStatus
     {

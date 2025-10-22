@@ -538,6 +538,11 @@ public class EnemyScript : MonoBehaviour
         Destroy(gameObject, destroyDelay);
     }
 
+    public bool IsDead()
+    {
+        return currentState == EnemyState.Dead;
+    }
+
     void OnDisable()
     {
         activeEnemies.Remove(this);

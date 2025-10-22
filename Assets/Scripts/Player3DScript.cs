@@ -43,6 +43,10 @@ public class Player3DScript : MonoBehaviour
     [SerializeField] float shoulderSideOffset = -0.3f;
     [SerializeField] float playerRadius = 2f;
     [SerializeField] float enemyRadius = 1.5f;
+    [SerializeField] float switchSensitivity = 0.6f; // How much mouse input to trigger a switch
+    [SerializeField] float switchCooldown = 0.4f;    // Delay before another switch allowed
+    private float lastSwitchTime;
+    [SerializeField] float orbitSpeedMultiplier = 1f; // tweak this: 1 = normal, 0.8 = slower orbit, 1.2 = faster
 
     [Header("Lock-On Symbol")]
     [SerializeField] GameObject lockOnSymbolPrefab;
@@ -480,6 +484,10 @@ public class Player3DScript : MonoBehaviour
         {
             currentAnimator.speed = 1f;
         }
+        if(lockOnTarget != null)
+        {
+            CheckMouseDirectionForTargetSwitch();
+        }
     }
 
     public void SetCurrentHealth(float health)
@@ -786,6 +794,24 @@ public class Player3DScript : MonoBehaviour
         Vector3 moveInput = new Vector3(x, 0f, z);
         Vector3 moveDirection = ConvertToCameraSpace(moveInput);
 
+        // When locked on, adjust movement to orbit around enemy
+        if (lockOnTarget != null)
+        {
+            Vector3 toEnemy = (lockOnTarget.position - transform.position).normalized;
+            Vector3 right = Vector3.Cross(Vector3.up, toEnemy);
+
+            // Build orbit movement vector: forward/back moves toward/away from enemy, strafe moves perpendicular
+            Vector3 orbitMove = (right * CurrentMovement.x + toEnemy * CurrentMovement.y);
+
+            // Keep smooth magnitude for diagonal movement
+            if (orbitMove.sqrMagnitude > 1f)
+                orbitMove.Normalize();
+
+            moveDirection = orbitMove;
+            moveDirection *= orbitSpeedMultiplier;
+
+        }
+
         if (currentAnimator != null)
             currentAnimator.SetBool("IsWalking", moveInput.magnitude > 0.1f);
 
@@ -925,22 +951,33 @@ public class Player3DScript : MonoBehaviour
             currentAnimator.SetFloat("Velocity", smoothVelocity);
 
         // ---------------- ADVANCED SMOOTH ROTATION ----------------
-        Vector3 moveDir = new Vector3(CurrentMovement.x, 0, CurrentMovement.y);
-        if (moveDir.sqrMagnitude > 0.01f)
+        Vector3 targetDirection;
+
+        if (lockOnTarget != null)
         {
-            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            // Face lock-on target only
+            targetDirection = (lockOnTarget.position - transform.position).normalized;
+            targetDirection.y = 0f; // ignore vertical
+        }
+        else
+        {
+            // Normal movement-based rotation
+            targetDirection = moveDirection;
+        }
+
+        if (targetDirection.sqrMagnitude > 0.01f)
+        {
+            float targetAngle = Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg;
             float smoothAngle = Mathf.SmoothDampAngle(
                 transform.eulerAngles.y,
                 targetAngle,
                 ref rotationSmoothVelocity,
-                0.15f // rotation smooth time (lower = snappier)
+                0.15f // rotation smooth time
             );
 
             transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
         }
-
     }
-
 
     void HandleRoll()
     {
@@ -1253,82 +1290,215 @@ public class Player3DScript : MonoBehaviour
     }
     void ToggleLockOn()
     {
+        // If already locked on, clear it
         if (lockOnTarget != null)
         {
-            lockOnTarget = null;
-            UpdateTargetGroup(null);
-            if (activeLockOnSymbol != null)
-            {
-                Destroy(activeLockOnSymbol);
-                activeLockOnSymbol = null;
-            }
+            ClearLockOn();
             return;
         }
 
-        Collider[] potentialTargets = Physics.OverlapSphere(transform.position, lockOnRange);
-        Transform closest = null;
-        float closestScreenDist = float.MaxValue;
+        // Try to find nearest valid enemy
+        Transform newTarget = FindNearestLockOnTarget();
 
-        foreach (var col in potentialTargets)
+        if (newTarget != null)
         {
-            if (!col.CompareTag("Enemy") && !col.CompareTag("EnemySpawner") && !col.CompareTag("AttackWall"))
-                continue;
-
-            Vector3 screenPoint = Camera.main.WorldToScreenPoint(col.transform.position);
-            if (screenPoint.z < 0) continue;
-
-            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            float dist = Vector2.Distance(screenCenter, new Vector2(screenPoint.x, screenPoint.y));
-
-            if (dist < closestScreenDist)
-            {
-                closestScreenDist = dist;
-                closest = col.transform;
-            }
-        }
-
-        if (closest != null)
-        {
-            lockOnTarget = closest;
+            StartCoroutine(SmoothLockSwitch(newTarget));
             UpdateTargetGroup(lockOnTarget);
 
+            // Show the lock-on symbol
             if (lockOnSymbolPrefab != null)
             {
                 if (activeLockOnSymbol == null)
-                    activeLockOnSymbol = Instantiate(lockOnSymbolPrefab);
+                    activeLockOnSymbol = Instantiate(lockOnSymbolPrefab, lockOnTarget.position + Vector3.up * 2f, Quaternion.identity);
+                else
+                    activeLockOnSymbol.transform.position = lockOnTarget.position + Vector3.up * 2f;
+
+                activeLockOnSymbol.transform.SetParent(lockOnTarget);
+            }
+        }
+        else
+        {
+            ClearLockOn();
+        }
+    }
+
+    Transform FindNearestLockOnTarget()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return null;
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, lockOnRange);
+        Transform bestTarget = null;
+
+        float bestScore = Mathf.Infinity;
+
+        foreach (var hit in hits)
+        {
+            if (!hit.CompareTag("Enemy") || !hit.CompareTag("EnemySpawner")) continue;
+
+            if (hit.CompareTag("Enemy")){
+                EnemyScript enemy = hit.GetComponent<EnemyScript>();
+                if (enemy == null || enemy.IsDead()) continue;
+            }
+            else if (hit.CompareTag("EnemySpawner"))
+            {
+                EnemySpawner Spawner = hit.GetComponent<EnemySpawner>();
+                if (Spawner == null || !Spawner.isActive) continue;
+            }
+
+            Vector3 dirToEnemy = (hit.transform.position - cam.transform.position).normalized;
+            float angleFromCamera = Vector3.Angle(cam.transform.forward, dirToEnemy);
+            float distance = Vector3.Distance(transform.position, hit.transform.position);
+
+            // Weighted score: prioritize small angle, then distance
+            float score = angleFromCamera * 1.5f + distance * 0.5f;
+
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestTarget = hit.transform;
+            }
+        }
+
+        return bestTarget;
+    }
+
+    void CheckMouseDirectionForTargetSwitch()
+    {
+        // Use your existing lockOnTarget as the guard
+        if (lockOnTarget == null) return;
+        if (Time.time < lastSwitchTime + switchCooldown) return;
+
+        float mouseX = Input.GetAxis("Mouse X");
+        if (Mathf.Abs(mouseX) < switchSensitivity) return;
+
+        int direction = mouseX > 0 ? 1 : -1; // right = +1, left = -1
+
+        // Collect potential targets
+        Collider[] hits = Physics.OverlapSphere(transform.position, lockOnRange);
+        Transform bestTarget = null;
+        float bestAngle = 360f;
+
+        foreach (var hit in hits)
+        {
+            if (!hit.CompareTag("Enemy")) continue;
+            if (hit.transform == lockOnTarget) continue;
+
+            EnemyScript enemy = hit.GetComponent<EnemyScript>();
+            if (enemy == null || enemy.IsDead()) continue;
+
+            Vector3 toEnemy = (hit.transform.position - transform.position).normalized;
+            Vector3 toCurrent = (lockOnTarget.position - transform.position).normalized;
+
+            // Flatten
+            toEnemy.y = 0f;
+            toCurrent.y = 0f;
+
+            // Signed angle from current to candidate around up axis
+            float signedAngle = Vector3.SignedAngle(toCurrent, toEnemy, Vector3.up);
+
+            // Candidate must be roughly in the flick direction and within a reasonable cone
+            if ((direction > 0 && signedAngle > 10f && signedAngle < 120f) ||
+                (direction < 0 && signedAngle < -10f && signedAngle > -120f))
+            {
+                float absAngle = Mathf.Abs(signedAngle);
+                if (absAngle < bestAngle)
+                {
+                    bestAngle = absAngle;
+                    bestTarget = hit.transform;
+                }
+            }
+        }
+
+        if (bestTarget != null)
+        {
+            // Switch lock-on
+            lockOnTarget = bestTarget;
+            UpdateTargetGroup(lockOnTarget);
+
+            // Reparent / move the symbol to the new target if present
+            if (activeLockOnSymbol != null)
+            {
+                activeLockOnSymbol.transform.SetParent(lockOnTarget, false);
+                activeLockOnSymbol.transform.localPosition = new Vector3(0f, enemyRadius + 1.0f, 0f);
                 activeLockOnSymbol.SetActive(true);
             }
+
+            lastSwitchTime = Time.time;
         }
     }
 
     void UpdateLockOnCamera()
     {
-        if (lockOnTarget != null)
+        if (lockOnTarget == null)
         {
-            float distance = Vector3.Distance(transform.position, lockOnTarget.position);
-            if (distance > lockOnRange || !lockOnTarget.gameObject.activeInHierarchy)
-            {
-                lockOnTarget = null;
-                UpdateTargetGroup(null);
-                if (activeLockOnSymbol != null)
-                {
-                    Destroy(activeLockOnSymbol);
-                    activeLockOnSymbol = null;
-                }
-                return;
-            }
-
-            Vector3 toTarget = lockOnTarget.position - transform.position;
-            toTarget.y = 0f;
-            Quaternion targetRot = Quaternion.LookRotation(toTarget);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
-
             if (activeLockOnSymbol != null)
             {
-                Vector3 mid = lockOnTarget.position + Vector3.up * enemyRadius;
-                activeLockOnSymbol.transform.position = mid;
-                activeLockOnSymbol.transform.rotation = Camera.main.transform.rotation;
+                Destroy(activeLockOnSymbol);
+                activeLockOnSymbol = null;
             }
+            UpdateTargetGroup(null);
+            return;
+        }
+
+        // Check if current target is dead or destroyed
+        EnemyScript enemy = lockOnTarget.GetComponent<EnemyScript>();
+        if (enemy == null || enemy.IsDead())
+        {
+            // Try to find a replacement target automatically
+            Transform newTarget = FindNearestLockOnTarget();
+
+            if (newTarget != null && newTarget != lockOnTarget)
+            {
+                StartCoroutine(SmoothLockSwitch(newTarget));
+                UpdateTargetGroup(lockOnTarget);
+
+                // Update or recreate the lock-on symbol
+                if (lockOnSymbolPrefab != null)
+                {
+                    if (activeLockOnSymbol == null)
+                        activeLockOnSymbol = Instantiate(lockOnSymbolPrefab, lockOnTarget);
+                    activeLockOnSymbol.transform.localPosition = new Vector3(0, 2.5f, 0);
+                }
+            }
+            else
+            {
+                // No other enemy nearby -> unlock
+                ClearLockOn();
+                return;
+            }
+        }
+
+        // Keep the camera stable on both player and target
+        if (targetGroup != null)
+        {
+            targetGroup.Targets[0].Object = shoulderProxy;
+            targetGroup.Targets[0].Radius = playerRadius;
+            targetGroup.Targets[1].Object = lockOnTarget;
+            targetGroup.Targets[1].Radius = enemyRadius;
+        }
+
+        // Make player face enemy smoothly
+        Vector3 lookDir = (lockOnTarget.position - transform.position);
+        lookDir.y = 0f;
+        if (lookDir.sqrMagnitude > 0.001f)
+        {
+            Quaternion lookRot = Quaternion.LookRotation(lookDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    IEnumerator SmoothLockSwitch(Transform newTarget)
+    {
+        yield return new WaitForSeconds(0.2f);
+        lockOnTarget = newTarget;
+        UpdateTargetGroup(lockOnTarget);
+
+        if (lockOnSymbolPrefab != null)
+        {
+            if (activeLockOnSymbol == null)
+                activeLockOnSymbol = Instantiate(lockOnSymbolPrefab, lockOnTarget);
+            activeLockOnSymbol.transform.localPosition = new Vector3(0, 2.5f, 0);
         }
     }
 
@@ -1356,6 +1526,17 @@ public class Player3DScript : MonoBehaviour
                 activeLockOnSymbol = null;
             }
         }
+    }
+
+    void ClearLockOn()
+    {
+        lockOnTarget = null;
+        if (activeLockOnSymbol != null)
+        {
+            Destroy(activeLockOnSymbol);
+            activeLockOnSymbol = null;
+        }
+        UpdateTargetGroup(null);
     }
 
     void OnDrawGizmosSelected()
