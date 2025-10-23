@@ -766,7 +766,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Product Owner:
+  m_text: 'Created by:
 
 
 
@@ -1671,7 +1671,7 @@ GameObject:
   - component: {fileID: 1602685507}
   - component: {fileID: 1602685506}
   m_Layer: 5
-  m_Name: PO
+  m_Name: CreatedBy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1716,7 +1716,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Aur\xE9lio Felippo Cruz\n"
+  m_text: 'Mechanic-All Studios
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36fd904e17bdc83499a9d26e29582c5b, type: 2}
   m_sharedMaterial: {fileID: 7252229961119978538, guid: 36fd904e17bdc83499a9d26e29582c5b, type: 2}

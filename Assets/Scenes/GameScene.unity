@@ -85316,7 +85316,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 05c101279aef1314e8e7a3d1f204e35e, type: 3}
   m_Resource: {fileID: 8300000, guid: 05c101279aef1314e8e7a3d1f204e35e, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -98386,6 +98386,9 @@ MonoBehaviour:
   shoulderSideOffset: 0.2
   playerRadius: 2
   enemyRadius: 1.5
+  switchSensitivity: 0.6
+  switchCooldown: 0.4
+  orbitSpeedMultiplier: 1
   lockOnSymbolPrefab: {fileID: 7115570748572837209, guid: 4c9b54148d546594b8944bdd82f56490, type: 3}
   healthBarGO: {fileID: 7086372290594301436}
   maxHealth: 100
