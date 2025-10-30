@@ -39,19 +39,41 @@ public class Enemy2DScript : MonoBehaviour
 
     void Start()
     {
-        // New: Get the Renderer component and store the initial color
-        enemyRenderer = GetComponentInChildren<Renderer>();
-        if (enemyRenderer != null)
+        // Get the Renderer from the first child only (skip parent)
+        if (transform.childCount > 0)
         {
-            // Store the initial color of the enemy's material
-            originalColor = enemyRenderer.material.color;
+            enemyRenderer = transform.GetChild(0).GetComponent<Renderer>();
+        }
+
+        if (enemyRenderer == null)
+        {
+            Debug.LogError($"{name}: Enemy2DScript -> No Renderer found in first child!");
         }
         else
         {
-            Debug.LogError("Enemy2DScript: Renderer component not found on this object or its children. Cannot apply damage color flash.");
+            // Make it a unique instance material
+            enemyRenderer.material = new Material(enemyRenderer.material);
+
+            Material mat = enemyRenderer.material;
+
+            if (mat.HasProperty("_BaseColor"))
+            {
+                originalColor = mat.GetColor("_BaseColor");
+                Debug.Log($"{name}: Using _BaseColor for flash. Original={originalColor}");
+            }
+            else if (mat.HasProperty("_Color"))
+            {
+                originalColor = mat.GetColor("_Color");
+                Debug.Log($"{name}: Using _Color for flash. Original={originalColor}");
+            }
+            else
+            {
+                originalColor = mat.color;
+                Debug.LogWarning($"{name}: Material has no _BaseColor or _Color; using mat.color instead.");
+            }
         }
 
-
+        // Player auto-find
         if (!player)
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -69,7 +91,7 @@ public class Enemy2DScript : MonoBehaviour
 
         if (!player)
         {
-            Debug.LogError("Enemy2DScript: No player found in scene with tag Player.");
+            Debug.LogError("Enemy2DScript: No player found with tag Player.");
             enabled = false;
         }
     }
@@ -155,19 +177,38 @@ public class Enemy2DScript : MonoBehaviour
     /// </summary>
     IEnumerator DamageFlash()
     {
-        // 1. Flash to the damage color
-        enemyRenderer.material.color = damageFlashColor;
+        if (enemyRenderer == null) yield break;
 
-        // 2. Wait for the duration of the flash
+        Material mat = enemyRenderer.material;
+
+        // Detect which property to use
+        bool hasBaseColor = mat.HasProperty("_BaseColor");
+        bool hasColor = mat.HasProperty("_Color");
+
+        // Flash
+        if (hasBaseColor)
+        {
+            mat.SetColor("_BaseColor", damageFlashColor);
+        }
+        else if (hasColor)
+        {
+            mat.SetColor("_Color", damageFlashColor);
+        }
+
         yield return new WaitForSeconds(flashDuration);
 
-        // 3. Revert to the original color
-        enemyRenderer.material.color = originalColor;
+        // Revert
+        if (hasBaseColor)
+        {
+            mat.SetColor("_BaseColor", originalColor);
+        }
+        else if (hasColor)
+        {
+            mat.SetColor("_Color", originalColor);
+        }
 
-        // Clear the coroutine reference
         flashRoutine = null;
     }
-
 
     void MoveTowardsPlayer(Vector3 enemyXZ, Vector3 playerXZ)
     {
