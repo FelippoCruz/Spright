@@ -63633,6 +63633,7 @@ MonoBehaviour:
   alarmAudio: {fileID: 1125148079}
   alarmFlashDuration: 0.5
   alarmDelayBetweenFlashes: 0.5
+  alarmStartDelay: 0.1
 --- !u!82 &1125148079
 AudioSource:
   m_ObjectHideFlags: 0
@@ -98371,14 +98372,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   damageAmount: 10
-  attackDuration: 0.8
+  attackDuration: 0.6
   attackRange: 4
   attackAngle: 150
   attackOrigin: {fileID: 1005390052}
   sweepRightToLeft: 1
   attackMoveMultiplier: 0.3
-  attackCooldown: 1
-  comboCooldown: 0.5
+  attackCooldown: 0.8
+  comboCooldown: 0.2
   lockOnRange: 30
   virtualCamera: {fileID: 2083341984}
   targetGroup: {fileID: 2141074773}

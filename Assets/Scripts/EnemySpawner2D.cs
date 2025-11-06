@@ -25,6 +25,7 @@ public class EnemySpawner2D : MonoBehaviour
     [SerializeField] private AudioSource alarmAudio;    // AudioSource to play alarm sound
     [SerializeField] private float alarmFlashDuration = 0.4f; // How long alarm stays active per flash
     [SerializeField] private float alarmDelayBetweenFlashes = 0.2f; // Delay between flashes
+    [SerializeField] private float alarmStartDelay = 1.5f; // <- NEW: Delay before alarm begins
 
     private int alive2DEnemies = 0;
     private bool isActive = true;
@@ -131,6 +132,10 @@ public class EnemySpawner2D : MonoBehaviour
 
     private IEnumerator AlarmRoutine()
     {
+        // Wait before starting the alarm (affects both UI and sound)
+        if (alarmStartDelay > 0)
+            yield return new WaitForSeconds(alarmStartDelay);
+
         // Two flashes
         for (int i = 0; i < 2; i++)
         {
