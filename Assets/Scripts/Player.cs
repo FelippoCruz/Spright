@@ -81,6 +81,18 @@ public class Player : MonoBehaviour
             int chosenIndex = (other.gameObject.name == "PortalSlade") ? 0 :
                               (other.gameObject.name == "PortalOphelia") ? 1 : -1;
 
+            if (chosenIndex == 0)
+            {
+                PlayerPrefs.SetString("playerName", "Slade Sullivan");
+                PlayerPrefs.Save();
+            }
+
+            else if (chosenIndex == 1)
+            {
+                PlayerPrefs.SetString("playerName", "Ophelia Sullivan");
+                PlayerPrefs.Save();
+            }
+
             if (chosenIndex != -1)
             {
                 CharacterChosen(chosenIndex, controller);

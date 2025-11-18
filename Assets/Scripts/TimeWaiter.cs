@@ -6,32 +6,34 @@ using UnityEngine.Localization.Settings;
 public class TimeWaiter : MonoBehaviour
 {
     [Header("Timing Settings")]
-    [SerializeField] float subtitleDelay = 1f;     // Pause between lines
-    [SerializeField] float sceneChangeDelay = 5f;  // Delay after input before changing scene
-    [SerializeField] float fadeDuration = 0.5f;    // Fade speed for skip effects
-    [SerializeField] float audioFadeDuration = 1f; // Separate from text fade speed
-    [SerializeField] float backgroundFadeDuration = 0.75f; // speed of background fade in/out
-
+    [SerializeField] float subtitleDelay = 1f;
+    [SerializeField] float sceneChangeDelay = 0.5f;
+    [SerializeField] float fadeDuration = 0.5f;
+    [SerializeField] float audioFadeDuration = 1f;
+    [SerializeField] float backgroundFadeDuration = 0.75f;
 
     [Header("References")]
     [SerializeField] SubtitlesManager subtitlesManager;
     [SerializeField] LocalizedAudioPlayer localizedAudioPlayer;
-    [SerializeField] TMP_InputField inputField;
-    [SerializeField] GameObject subtitleBackground;
+
+    [Header("UI")]
+    [SerializeField] GameObject pressEnterImage;   // NEW – image shown at the end
 
     private AudioSource audioSource;
-    private string playerInput;
 
     private bool skipCurrentLine = false;
     private bool skipAll = false;
     private bool isFading = false;
+    private bool waitingForContinue = false;        // NEW
 
     void Start()
     {
         if (subtitlesManager != null && subtitlesManager.backgroundImage != null)
-            subtitleBackground = subtitlesManager.backgroundImage;
+            subtitlesManager.backgroundImage.SetActive(false);
 
-        inputField.gameObject.SetActive(false);
+        if (pressEnterImage != null)
+            pressEnterImage.SetActive(false);
+
         audioSource = localizedAudioPlayer.GetComponent<AudioSource>();
 
         StartCoroutine(PlayIntroSequence());
@@ -39,34 +41,53 @@ public class TimeWaiter : MonoBehaviour
 
     IEnumerator PlayIntroSequence()
     {
-        // Fade in background once
+        // Fade in subtitle background
         yield return StartCoroutine(FadeInBackground());
 
-        int totalLines = 4; // or subtitlesManager.lineKeys.Length if dynamic
+        int totalLines = 4; // adjust as needed
+
         for (int i = 0; i < totalLines; i++)
         {
             if (skipAll) break;
 
-            // Reset and show subtitle text
             subtitlesManager.ResetText();
             subtitlesManager.ShowSubtitle(i);
 
-            // Play audio and fade-in text simultaneously
+            // Audio + typing logic
             yield return StartCoroutine(PlaySubtitleAndAudio(i));
 
             if (skipAll) break;
 
-            // Wait subtitleDelay before next line, but keep background visible
             yield return new WaitForSecondsRealtime(subtitleDelay);
         }
 
-        // Fade out background at the very end
+        // Fade out background before showing prompt
         yield return StartCoroutine(FadeOutBackground());
 
-        // Show input field after everything
-        subtitlesManager.ResetText(); // just to be sure text is cleared
-        inputField.gameObject.SetActive(true);
-        inputField.onSubmit.AddListener(OnInputSubmit);
+        // All subtitles done -> show "Press Enter" prompt
+        ShowPressEnterPrompt();
+
+        // Wait for ENTER
+        yield return StartCoroutine(WaitForEnter());
+
+        // Load next scene
+        StartCoroutine(LoadNextSceneAfterDelay());
+    }
+
+    void ShowPressEnterPrompt()
+    {
+        if (pressEnterImage != null)
+            pressEnterImage.SetActive(true);
+
+        waitingForContinue = true;
+    }
+
+    IEnumerator WaitForEnter()
+    {
+        while (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter))
+            yield return null;
+
+        waitingForContinue = false;
     }
 
     IEnumerator PlaySubtitleAndAudio(int index)
@@ -74,14 +95,11 @@ public class TimeWaiter : MonoBehaviour
         skipCurrentLine = false;
         isFading = false;
 
-        // Start monitoring input for skipping
         Coroutine inputMonitor = StartCoroutine(SkipInputMonitor());
 
-        // Start audio and text
         Coroutine audioRoutine = StartCoroutine(PlayLocalizedClipAtIndex(index));
         Coroutine fadeInRoutine = StartCoroutine(FadeInText());
 
-        // Wait until typing + audio are finished or player skips
         while (!skipCurrentLine && !skipAll && (audioSource.isPlaying || !IsTypingDone()))
             yield return null;
 
@@ -89,26 +107,20 @@ public class TimeWaiter : MonoBehaviour
 
         if (skipCurrentLine && !skipAll)
         {
-            // Immediately stop typing
             subtitlesManager.SkipTyping();
-
-            // Fade text only
             yield return StartCoroutine(FadeOutText());
         }
         else if (skipAll)
         {
             subtitlesManager.SkipTyping();
-            // Fade text and background immediately
             yield return StartCoroutine(FadeOutText());
             yield return StartCoroutine(FadeOutBackground());
         }
         else
         {
-            // Normal playback finished, just fade out text
             yield return StartCoroutine(FadeOutText());
         }
 
-        // Reset text, keep background active
         subtitlesManager.ResetText();
     }
 
@@ -184,7 +196,6 @@ public class TimeWaiter : MonoBehaviour
             faded.a = Mathf.Lerp(startAlpha, 0f, t);
             text.color = faded;
 
-            // Fade audio if playing
             if (audioSource != null && audioSource.isPlaying)
                 audioSource.volume = Mathf.Lerp(1f, 0f, t);
 
@@ -195,7 +206,6 @@ public class TimeWaiter : MonoBehaviour
         if (audioSource != null && audioSource.isPlaying)
             audioSource.Stop();
 
-        // Reset text and audio for next line
         original.a = 1f;
         text.color = original;
         if (audioSource != null)
@@ -230,12 +240,12 @@ public class TimeWaiter : MonoBehaviour
 
     IEnumerator FadeOutBackground()
     {
-        if (subtitleBackground == null) yield break;
+        if (subtitlesManager.backgroundImage == null) yield break;
 
-        CanvasGroup group = subtitleBackground.GetComponent<CanvasGroup>();
+        CanvasGroup group = subtitlesManager.backgroundImage.GetComponent<CanvasGroup>();
         if (group == null)
         {
-            group = subtitleBackground.AddComponent<CanvasGroup>();
+            group = subtitlesManager.backgroundImage.AddComponent<CanvasGroup>();
             group.alpha = 1f;
         }
 
@@ -250,18 +260,18 @@ public class TimeWaiter : MonoBehaviour
         }
 
         group.alpha = 0f;
-        subtitleBackground.SetActive(false);
+        subtitlesManager.backgroundImage.SetActive(false);
     }
 
     IEnumerator FadeInBackground()
     {
-        if (subtitleBackground == null) yield break;
+        if (subtitlesManager.backgroundImage == null) yield break;
 
-        CanvasGroup group = subtitleBackground.GetComponent<CanvasGroup>();
+        CanvasGroup group = subtitlesManager.backgroundImage.GetComponent<CanvasGroup>();
         if (group == null)
-            group = subtitleBackground.AddComponent<CanvasGroup>();
+            group = subtitlesManager.backgroundImage.AddComponent<CanvasGroup>();
 
-        subtitleBackground.SetActive(true);
+        subtitlesManager.backgroundImage.SetActive(true);
         group.alpha = 0f;
 
         float time = 0f;
@@ -280,11 +290,10 @@ public class TimeWaiter : MonoBehaviour
         return subtitlesManager != null && subtitlesManager.typingFinished;
     }
 
-
     AudioClip[] GetLocalizedClips()
     {
         string code = LocalizationSettings.SelectedLocale.Identifier.Code;
-        if (code == "pt" || code == "pt-BR")
+        if (code.StartsWith("pt"))
             return typeof(LocalizedAudioPlayer)
                 .GetField("portugueseClips", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 ?.GetValue(localizedAudioPlayer) as AudioClip[];
@@ -292,21 +301,6 @@ public class TimeWaiter : MonoBehaviour
         return typeof(LocalizedAudioPlayer)
             .GetField("englishClips", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.GetValue(localizedAudioPlayer) as AudioClip[];
-    }
-
-    void OnInputSubmit(string input)
-    {
-        if (!string.IsNullOrEmpty(input))
-        {
-            playerInput = input;
-            PlayerPrefs.SetString("playerName", playerInput);
-            PlayerPrefs.Save();
-
-            inputField.onSubmit.RemoveListener(OnInputSubmit);
-            inputField.gameObject.SetActive(false);
-
-            StartCoroutine(LoadNextSceneAfterDelay());
-        }
     }
 
     IEnumerator LoadNextSceneAfterDelay()

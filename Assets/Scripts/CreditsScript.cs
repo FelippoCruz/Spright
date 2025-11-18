@@ -22,17 +22,31 @@ public class CreditsRoll : MonoBehaviour
 
     LevelLoader LevelLoader;
 
+    private float escHoldTime = 0f;          // <-- Added
+
     void Start() => StartCoroutine(Roll());
 
     private void Update()
     {
+        // Speed boost with Space
         if (Input.GetKey(KeyCode.Space))
-        {
             scrollSpeed = 240;
+        else
+            scrollSpeed = 60;
+
+        // ESC HOLD LOGIC ---------------------------------------
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            escHoldTime += Time.unscaledDeltaTime;
+
+            if (escHoldTime >= 3f)  // held for 3 seconds
+            {
+                LoadReturnScene();
+            }
         }
         else
         {
-            scrollSpeed = 60;
+            escHoldTime = 0f;
         }
     }
 
@@ -68,6 +82,12 @@ public class CreditsRoll : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(logoPause);
 
+        LoadReturnScene();
+    }
+
+    // ------------------ Helper Method ------------------
+    private void LoadReturnScene()
+    {
         bool beaten = PlayerPrefs.GetInt(BEAT_KEY, 0) == 1;
         string returnScene = beaten
             ? menuScene

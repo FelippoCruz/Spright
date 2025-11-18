@@ -544,7 +544,7 @@ BlendTree:
     m_DirectBlendParameter: IdleTimer
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 112a594665fe0be45847e9682f799997, type: 2}
+    m_Motion: {fileID: 7400000, guid: b0c45defe50871446bffb82419aad8cd, type: 2}
     m_Threshold: 3
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1.1
@@ -552,7 +552,7 @@ BlendTree:
     m_DirectBlendParameter: IdleTimer
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 4e1733706cf51bf46a517c16d655d5d7, type: 2}
+    m_Motion: {fileID: 7400000, guid: a4d95206217179244aa719b90813b081, type: 2}
     m_Threshold: 6
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
