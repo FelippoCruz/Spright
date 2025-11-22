@@ -274,6 +274,17 @@ MonoBehaviour:
     m_Localized: Your soul takes form... of a brilliant sphere
     m_Metadata:
       m_Items: []
+  - m_Id: 49962501925023744
+    m_Localized: 'Now, take a moment to "reflect".
+
+      That mirror should make
+      it easier.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49963153342377984
+    m_Localized: I have a bad feeling about those pilars...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

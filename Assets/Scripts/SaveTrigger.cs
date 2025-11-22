@@ -10,20 +10,26 @@ public class SaveTrigger : MonoBehaviour
     public GameObject player2;
 
     [SerializeField] ParticleSystem SaveParticle;
+    [SerializeField] GameObject triggerMessage;
 
     private void Start()
     {
         if (SaveParticle != null)
-        {
             SaveParticle.Stop();
-        }
+
+        if (triggerMessage != null)
+            triggerMessage.SetActive(false);
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = true;
             savePrompt.SetActive(true);
+
+            if (triggerMessage != null)
+                triggerMessage.SetActive(true);
         }
     }
 
@@ -33,6 +39,9 @@ public class SaveTrigger : MonoBehaviour
         {
             isPlayerInRange = false;
             savePrompt.SetActive(false);
+
+            if (triggerMessage != null)
+                triggerMessage.SetActive(false);
         }
     }
 

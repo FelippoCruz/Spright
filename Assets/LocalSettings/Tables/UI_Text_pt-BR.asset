@@ -272,6 +272,17 @@ MonoBehaviour:
     m_Localized: Sua alma toma uma forma... a de uma esfera que brilha
     m_Metadata:
       m_Items: []
+  - m_Id: 49962501925023744
+    m_Localized: 'Agora, tire um momento para se "refletir".
+
+      Esse espelho
+      vai facilitar o trabalho.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49963153342377984
+    m_Localized: Eu tenho um mal pressentimento sobre esses pilares...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

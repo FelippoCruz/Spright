@@ -19,16 +19,31 @@ public class EnemyAreaTrigger : MonoBehaviour
     [Header("Subtitles")]
     [SerializeField] SubtitlesManager subtitlesManager;
 
+    [Header("Trigger Message")]
+    [SerializeField] GameObject messageObject;
+    [SerializeField] float messageDuration = 3f;
+
+    bool messageShown = false;
+
     bool sequenceStarted = false;
 
     public bool Triggered { get; private set; } = false;
 
+    private void Start()
+    {
+        if (messageObject != null)
+            messageObject.SetActive(false);
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !sequenceStarted)
         {
             Triggered = true;
             sequenceStarted = true;
+
+            if (!messageShown)
+                StartCoroutine(ShowTriggerMessageOnce());
+
             StartCoroutine(PlaySequenceThenMusic());
         }
     }
@@ -92,5 +107,18 @@ public class EnemyAreaTrigger : MonoBehaviour
             else
                 return audioClipsEnglishSlade;
         }
+    }
+
+    IEnumerator ShowTriggerMessageOnce()
+    {
+        messageShown = true;
+
+        if (messageObject != null)
+            messageObject.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(messageDuration);
+
+        if (messageObject != null)
+            messageObject.SetActive(false);
     }
 }

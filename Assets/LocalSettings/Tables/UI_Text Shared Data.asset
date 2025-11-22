@@ -267,6 +267,14 @@ MonoBehaviour:
     m_Key: Soul
     m_Metadata:
       m_Items: []
+  - m_Id: 49962501925023744
+    m_Key: ReflectText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49963153342377984
+    m_Key: PilarsText
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

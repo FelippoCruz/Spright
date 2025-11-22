@@ -1302,14 +1302,18 @@ public class Player3DScript : MonoBehaviour
 
         if (newTarget != null)
         {
-            StartCoroutine(SmoothLockSwitch(newTarget));
+            lockOnTarget = newTarget;
             UpdateTargetGroup(lockOnTarget);
+            StartCoroutine(SmoothLockSwitch(newTarget));
 
             // Show the lock-on symbol
             if (lockOnSymbolPrefab != null)
             {
                 if (activeLockOnSymbol == null)
-                    activeLockOnSymbol = Instantiate(lockOnSymbolPrefab, lockOnTarget.position + Vector3.up * 2f, Quaternion.identity);
+                {
+                    activeLockOnSymbol = Instantiate(lockOnSymbolPrefab, newTarget.position + Vector3.up * 2f, Quaternion.identity);
+                    activeLockOnSymbol.transform.SetParent(newTarget);
+                }
                 else
                     activeLockOnSymbol.transform.position = lockOnTarget.position + Vector3.up * 2f;
 
@@ -1334,9 +1338,10 @@ public class Player3DScript : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (!hit.CompareTag("Enemy") || !hit.CompareTag("EnemySpawner")) continue;
+            if (!hit.CompareTag("Enemy") && !hit.CompareTag("EnemySpawner")) continue;
 
-            if (hit.CompareTag("Enemy")){
+            if (hit.CompareTag("Enemy"))
+            {
                 EnemyScript enemy = hit.GetComponent<EnemyScript>();
                 if (enemy == null || enemy.IsDead()) continue;
             }
@@ -1345,6 +1350,7 @@ public class Player3DScript : MonoBehaviour
                 EnemySpawner Spawner = hit.GetComponent<EnemySpawner>();
                 if (Spawner == null || !Spawner.isActive) continue;
             }
+            else continue;
 
             Vector3 dirToEnemy = (hit.transform.position - cam.transform.position).normalized;
             float angleFromCamera = Vector3.Angle(cam.transform.forward, dirToEnemy);
