@@ -10965,7 +10965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5019608, g: 0, b: 0, a: 0.8352941}
+  m_Color: {r: 0.5019608, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -38636,7 +38636,7 @@ MonoBehaviour:
   attackAngle: 150
   attackOrigin: {fileID: 1005390052}
   sweepRightToLeft: 1
-  attackMoveMultiplier: 0.3
+  attackMoveMultiplier: 0
   attackCooldown: 0.8
   comboCooldown: 0.3
   lockOnRange: 30
