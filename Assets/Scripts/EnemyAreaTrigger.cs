@@ -7,6 +7,7 @@ public class EnemyAreaTrigger : MonoBehaviour
     [Header("Audio")]
     [SerializeField] AudioSource voiceSource;
     [SerializeField] AudioSource musicSource;
+    [SerializeField] AudioSource backgroundMusicSource;
 
     [SerializeField] AudioClip[] audioClipsEnglishOphelia;
     [SerializeField] AudioClip[] audioClipsPortugueseOphelia;
@@ -27,13 +28,20 @@ public class EnemyAreaTrigger : MonoBehaviour
 
     bool sequenceStarted = false;
 
+    [Header("Music Fading")]
+    [SerializeField] float fadeDuration = 1.5f; // seconds
+
     public bool Triggered { get; private set; } = false;
 
     private void Start()
     {
         if (messageObject != null)
             messageObject.SetActive(false);
+
+        if (backgroundMusicSource != null && !backgroundMusicSource.isPlaying)
+            backgroundMusicSource.Play();
     }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !sequenceStarted)
@@ -81,9 +89,7 @@ public class EnemyAreaTrigger : MonoBehaviour
         if (OptionsManager.SubtitlesEnabled && subtitlesManager != null)
             subtitlesManager.EndSubtitles();
 
-        musicSource.clip = fightMusic;
-        musicSource.loop = true;
-        musicSource.Play();
+        StartCoroutine(MusicTransition());
 
         gameObject.SetActive(false);
     }
@@ -120,5 +126,44 @@ public class EnemyAreaTrigger : MonoBehaviour
 
         if (messageObject != null)
             messageObject.SetActive(false);
+    }
+
+    private IEnumerator MusicTransition()
+    {
+        // 1. Fade out background music
+        if (backgroundMusicSource != null)
+        {
+            float startVolume = backgroundMusicSource.volume;
+            yield return StartCoroutine(FadeAudioSource(backgroundMusicSource, startVolume, 0f, fadeDuration));
+            backgroundMusicSource.Stop();
+            backgroundMusicSource.volume = startVolume;
+        }
+
+        // 2. Fade in fight music
+        if (musicSource != null && fightMusic != null)
+        {
+            musicSource.clip = fightMusic;
+            musicSource.volume = 0f;
+            musicSource.loop = true;
+            musicSource.Play();
+
+            yield return StartCoroutine(FadeAudioSource(musicSource, 0f, 1f, fadeDuration));
+        }
+    }
+
+    private IEnumerator FadeAudioSource(AudioSource source, float from, float to, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+
+            source.volume = Mathf.Lerp(from, to, t);
+            yield return null;
+        }
+
+        source.volume = to;
     }
 }

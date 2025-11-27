@@ -114,6 +114,35 @@ public class Player3DScript : MonoBehaviour
     [SerializeField] TextMeshProUGUI HealText;
     int HealUses;
 
+    [Header("Footstep SFX")]
+    [SerializeField] private AudioSource walkAudio;
+    [SerializeField] private AudioSource runAudio;
+
+    [SerializeField] private float footstepIntervalWalk = 0.45f;
+    [SerializeField] private float footstepIntervalRun = 0.32f;
+
+    private float footstepTimer = 0f;
+
+    [Header("Attack SFX Settings")]
+    [SerializeField] private AudioSource attackAudioSource;
+
+    // Slade sound list
+    [SerializeField] private List<AudioClip> sladeAttackSounds = new();
+
+    // Ophelia sound list
+    [SerializeField] private List<AudioClip> opheliaAttackSounds = new();
+
+    // The list that will actually be used
+    private List<AudioClip> activeAttackSounds = new();
+
+    [Header("Jump SFX")]
+    [SerializeField] private AudioSource jumpAudioSource;
+    [SerializeField] private AudioClip sladeJumpSound;
+    [SerializeField] private AudioClip opheliaJumpSound;
+
+    // Runtime-active jump sound depending on character
+    private AudioClip activeJumpSound;
+
     // Internals
     float currentHealth;
     HealthBarScript healthBar;
@@ -230,7 +259,13 @@ public class Player3DScript : MonoBehaviour
             if (IsGrounded())
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.gravity.y);
-                if (currentAnimator != null) currentAnimator.SetTrigger("IsJumping");
+
+                // Play jump SFX
+                if (jumpAudioSource != null && activeJumpSound != null)
+                    jumpAudioSource.PlayOneShot(activeJumpSound);
+
+                if (currentAnimator != null)
+                    currentAnimator.SetTrigger("IsJumping");
             }
         };
         PlayerControls.Player.Crouch.performed += ctx => { /* No code needed, we use .triggered in Update */ };
@@ -286,6 +321,25 @@ public class Player3DScript : MonoBehaviour
                 break;
             }
         }
+
+        string playerName = PlayerPrefs.GetString("PlayerName", "Slade Sullivan");
+        if (playerName == "Ophelia Sullivan")
+        {
+            activeAttackSounds = sladeAttackSounds;
+            activeJumpSound = sladeJumpSound;
+        }
+        else
+        {
+            activeAttackSounds = opheliaAttackSounds;
+            activeJumpSound = opheliaJumpSound;
+        }
+
+        // Safety fallback
+        if (activeAttackSounds == null || activeAttackSounds.Count == 0)
+            Debug.LogWarning("No attack sounds assigned for: " + playerName);
+
+        if (activeJumpSound == null)
+            Debug.LogWarning("No jump sound assigned for: " + playerName);
     }
     void Update()
     {
@@ -488,6 +542,7 @@ public class Player3DScript : MonoBehaviour
         {
             CheckMouseDirectionForTargetSwitch();
         }
+        HandleFootsteps();
     }
 
     public void SetCurrentHealth(float health)
@@ -783,6 +838,86 @@ public class Player3DScript : MonoBehaviour
         }
     }
 
+    private void HandleFootsteps()
+    {
+        // Do not play footsteps if player is dead, attacking, rolling, sliding, on ladder, etc.
+        if (isDead || isRolling || onSlide || onLadder)
+        {
+            StopAllFootsteps();
+            return;
+        }
+
+        // Player must be grounded
+        if (!controller.isGrounded)
+        {
+            StopAllFootsteps();
+            return;
+        }
+
+        bool isWalking = currentAnimator != null && currentAnimator.GetBool("IsWalking");
+        bool isRunningNow = isRunning;
+
+        // If player is not walking nor running -> stop sounds
+        if (!isWalking && !isRunningNow)
+        {
+            StopAllFootsteps();
+            return;
+        }
+
+        footstepTimer -= Time.deltaTime;
+
+        // --- RUNNING FOOTSTEPS ---
+        if (isRunningNow)
+        {
+            // Stop walk sound if it was playing
+            if (walkAudio != null && walkAudio.isPlaying)
+                walkAudio.Stop();
+
+            if (footstepTimer <= 0f)
+            {
+                if (runAudio != null)
+                {
+                    runAudio.Stop(); // ensure no overlap
+                    runAudio.Play();
+                }
+
+                footstepTimer = footstepIntervalRun;
+            }
+
+            return;
+        }
+
+        // --- WALKING FOOTSTEPS ---
+        if (isWalking)
+        {
+            // Stop run sound if it was playing
+            if (runAudio != null && runAudio.isPlaying)
+                runAudio.Stop();
+
+            if (footstepTimer <= 0f)
+            {
+                if (walkAudio != null)
+                {
+                    walkAudio.Stop(); // ensure no overlap
+                    walkAudio.Play();
+                }
+
+                footstepTimer = footstepIntervalWalk;
+            }
+        }
+    }
+
+    private void StopAllFootsteps()
+    {
+        footstepTimer = 0f;
+
+        if (walkAudio != null && walkAudio.isPlaying)
+            walkAudio.Stop();
+
+        if (runAudio != null && runAudio.isPlaying)
+            runAudio.Stop();
+    }
+
     void MoveCharacter()
     {
         myIsGrounded = false;
@@ -1076,6 +1211,18 @@ public class Player3DScript : MonoBehaviour
         return camForward * input.z + camRight * input.x;
     }
 
+    private void PlayRandomAttackSound()
+    {
+        if (attackAudioSource == null) return;
+        if (activeAttackSounds == null || activeAttackSounds.Count == 0) return;
+
+        int index = UnityEngine.Random.Range(0, activeAttackSounds.Count);
+        AudioClip chosen = activeAttackSounds[index];
+
+        attackAudioSource.clip = chosen;
+        attackAudioSource.Play();
+    }
+
     // Allow forcing the start (used when we process a queued input immediately after an attack)
     void StartAttack(bool force = false)
     {
@@ -1089,6 +1236,7 @@ public class Player3DScript : MonoBehaviour
         isAttacking = true;
         attackTimer = attackDuration;
         alreadyHit.Clear();
+        PlayRandomAttackSound();
 
         // --- Play combo animation ---
         if (currentAnimator != null && comboAnimations != null && comboAnimations.Length > 0)
