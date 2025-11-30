@@ -5,8 +5,8 @@ public class CreditsRoll : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] RectTransform creditsContent;
-    [SerializeField] float scrollSpeed = 60f;
-    [SerializeField] float topY = 1600f;
+    [SerializeField] float scrollSpeed = 110f;
+    [SerializeField] float topY = 3000f;
 
     [Header("Logo")]
     [SerializeField] CanvasGroup companyLogoGroup;
@@ -30,9 +30,9 @@ public class CreditsRoll : MonoBehaviour
     {
         // Speed boost with Space
         if (Input.GetKey(KeyCode.Space))
-            scrollSpeed = 240;
+            scrollSpeed = 250;
         else
-            scrollSpeed = 60;
+            scrollSpeed = 110;
 
         // ESC HOLD LOGIC ---------------------------------------
         if (Input.GetKey(KeyCode.Escape))
