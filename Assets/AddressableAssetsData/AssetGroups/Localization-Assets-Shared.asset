@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: 8c419817b0308b84a9142e4f34ef404d
   m_SerializeEntries:
+  - m_GUID: 1dc9c2d95f95f9645820327b9952bedb
+    m_Address: Assets/3D tutorial Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40c8868f7ca97964183456685b8aa12c
     m_Address: Assets/LocalSettings/Tables/Credits_Text Shared Data.asset
     m_ReadOnly: 1
@@ -37,6 +42,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bf2b23fd4b2a8d04ca8e1c99c4f79c38
     m_Address: Assets/LocalSettings/Tables/CharacterSelection_Text Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7c87d0265bb6f04ebc25758641d1705
+    m_Address: Assets/Mission Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

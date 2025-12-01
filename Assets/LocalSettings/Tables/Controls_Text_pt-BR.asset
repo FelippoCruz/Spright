@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 97216933888
-    m_Localized: WASD - Mover em 3D
+    m_Localized: Socar e chutar
     m_Metadata:
       m_Items: []
   - m_Id: 2497252208640
@@ -27,15 +27,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3047028994048
-    m_Localized: E - Interagir em 3D
+    m_Localized: Interagir em 3D
     m_Metadata:
       m_Items: []
   - m_Id: 3330614276096
-    m_Localized: F - Atirar em 2D
+    m_Localized: Atirar 2D
     m_Metadata:
       m_Items: []
   - m_Id: 3775025950720
-    m_Localized: "Espa\xE7o - Pular em 3D"
+    m_Localized: Pular 3D
     m_Metadata:
       m_Items: []
   - m_Id: 4150030282752
@@ -43,19 +43,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4480856010752
-    m_Localized: Pressionar Shift - Rolar em 3D
+    m_Localized: Pressionar Shift 2 vezes- Rolar em 3D
     m_Metadata:
       m_Items: []
   - m_Id: 4885895753728
-    m_Localized: C - Agachar em 3D / Levantar em 3D
+    m_Localized: Agachar 3D / Levantar 3D
     m_Metadata:
       m_Items: []
   - m_Id: 5239844679680
-    m_Localized: R - Curar
+    m_Localized: "Curar-se com a po\xE7\xE3o"
     m_Metadata:
       m_Items: []
   - m_Id: 5700211486720
-    m_Localized: "Q - Alternar a ativa\xE7\xE3o de Trava de Mira em 3D"
+    m_Localized: "Ativa\xE7\xE3o de Trava de Mira em 3D"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19179761617485824
+    m_Localized: "Miss\xE3o:\nAtire nas almas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19190388117356544
+    m_Localized: Tutorial 3D - Luta de Corpo a Corpo
     m_Metadata:
       m_Items: []
   references:

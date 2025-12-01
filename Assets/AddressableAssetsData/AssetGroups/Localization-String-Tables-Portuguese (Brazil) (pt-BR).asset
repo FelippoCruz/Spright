@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Portuguese (Brazil) (pt-BR)
   m_GUID: 38a08a6682d6e6d4fabf2e3513ef23a7
   m_SerializeEntries:
+  - m_GUID: 0568a3c30c3ef9e4e8cd7fb1d618c1e7
+    m_Address: 3D tutorial_pt-BR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pt-BR
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 572d3dee76e7ba0419c9033eabdd2fb3
     m_Address: Controls_Text_pt-BR
     m_ReadOnly: 1
@@ -41,6 +47,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a36a54694ecf41c4b9d22ae95b7c62b6
     m_Address: Dialogue_Text_pt-BR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pt-BR
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b81776f080562d54fa9f1f5ba79beae6
+    m_Address: Mission_pt-BR
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-pt-BR
