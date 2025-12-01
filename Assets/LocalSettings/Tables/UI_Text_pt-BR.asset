@@ -75,7 +75,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4294633107456
-    m_Localized: Tutorial 2D - Luta de Almas
+    m_Localized: '3D & 2D -Tutorial
+
+      Luta de corpo e alma'
     m_Metadata:
       m_Items: []
   - m_Id: 4893487443968
@@ -281,6 +283,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 49963153342377984
     m_Localized: Eu tenho um mal pressentimento sobre esses pilares...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53493245272276992
+    m_Localized: Tutorial 2D - Luta de Alma
     m_Metadata:
       m_Items: []
   references:

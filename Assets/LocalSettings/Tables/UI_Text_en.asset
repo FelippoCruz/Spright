@@ -75,7 +75,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4294633107456
-    m_Localized: 2D Tutorial - Soul Fight
+    m_Localized: '3D & 2D -Tutorial
+
+      Soul and body fight'
     m_Metadata:
       m_Items: []
   - m_Id: 4893487443968
@@ -283,6 +285,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 49963153342377984
     m_Localized: I have a bad feeling about those pilars...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53493245272276992
+    m_Localized: 2D Tutorial - Soul Fight
     m_Metadata:
       m_Items: []
   references:

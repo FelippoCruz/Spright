@@ -88,6 +88,10 @@ MonoBehaviour:
       que nos acompanhou nesta jornada. Obrigado por jogar!\r\n\r\n"
     m_Metadata:
       m_Items: []
+  - m_Id: 19518629118099456
+    m_Localized: Mover 3D
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
