@@ -63,6 +63,10 @@ MonoBehaviour:
     m_Key: 3D
     m_Metadata:
       m_Items: []
+  - m_Id: 19477387197956096
+    m_Key: Credits
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
