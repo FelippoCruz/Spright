@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 97216933888
-    m_Localized: Punch and kick
+    m_Localized: LMB - Punch / Kick
     m_Metadata:
       m_Items: []
   - m_Id: 2497252208640
@@ -27,15 +27,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3047028994048
-    m_Localized: Interact 3D
+    m_Localized: E - Interact 3D
     m_Metadata:
       m_Items: []
   - m_Id: 3330614276096
-    m_Localized: Shoot 2D
+    m_Localized: F - Shoot 2D
     m_Metadata:
       m_Items: []
   - m_Id: 3775025950720
-    m_Localized: Jump 3D
+    m_Localized: Space - Jump 3D
     m_Metadata:
       m_Items: []
   - m_Id: 4150030282752
@@ -43,19 +43,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4480856010752
-    m_Localized: Press Shift 2 times - Roll 3D
+    m_Localized: Press Shift - Roll 3D
     m_Metadata:
       m_Items: []
   - m_Id: 4885895753728
-    m_Localized: Crouch 3D / Stand 3D
+    m_Localized: C - Crouch 3D / Stand 3D
     m_Metadata:
       m_Items: []
   - m_Id: 5239844679680
-    m_Localized: Heal with the Potion
+    m_Localized: R - Heal with the Potion
     m_Metadata:
       m_Items: []
   - m_Id: 5700211486720
-    m_Localized: Toggle Lock-On 3D
+    m_Localized: Q - Toggle Lock-On 3D
     m_Metadata:
       m_Items: []
   - m_Id: 19179761617485824
@@ -72,26 +72,24 @@ MonoBehaviour:
     m_Localized: "Created by\r\nMechanic-All Studios\r\n\r\nProgrammers\r\nAur\xE9lio
       Felippo Cruz\r\n\r\nArtists\r\nAur\xE9lio Felippo Cruz\r\nGuilherme Mendes
       Salema\r\nNicolas Kenji Sato Rocha\r\nPedro Croco Navarro\r\n\r\nVoice Actors\r\nArthur
-      Sampaio Fernandes - Slade Sullivan\r\nAur\xE9lio Felippo Cruz - Narrator/Zorathmon\r\n\xC9rica
+      Sampaio Fernandes - Slade Sullivan\r\nAur\xE9lio Felippo Cruz - Narrator\r\n\xC9rica
       Okamoto - Ophelia Sullivan\r\n\r\nGame/Level Designers\r\nAur\xE9lio Felippo
       Cruz\r\nDanyel Henrique Andrade\r\nPedro Croco Navarro\r\n\r\nWriters\r\nAur\xE9lio
-      Felippo Cruz\r\nDanyel Henrique Andrade\r\n\r\nMusic/SFX\r\nAur\xE9lio Felippo
-      Cruz\r\nFrancisco Quarentei Nunes\r\nPedro Croco Navarro\r\n\r\nEntrepreneurships\r\nAur\xE9lio
-      Felippo Cruz\r\nJ\xFAlia Nishida\r\n\r\nSocial Media\r\nAur\xE9lio Felippo
-      Cruz\r\nDanyel Henrique Andrade\r\nGuilherme Mendes Salema\r\nNicolas Kenji
-      Sato Rocha\r\nPedro Croco Navarro\r\nJ\xFAlia Nishida\r\n\r\nSpecial thanks
-      to\r\n\r\nAguinaldo Alberto J\xFAnior\r\nArthur Sampaio Fernandes\r\nDavid
-      de Oliveira Lemes\r\nD\xE9bora Machado\r\nEric de Lucas\r\n\xC9rica Okamoto\r\nFabiano
-      On\xE7a\r\nFrancisco Quarentei Nunes\r\nGilles Pedroza Leite\r\nGuilherme Mendes
-      Salema\r\nJoyce Daniele Tavares\r\nJ\xFAlia Nishida\r\nMarcelo Krokoscz\r\nMurilo
-      Barbosa Sanches\r\nRafael Diogo Rossetti\r\nRodrigo Cruz Domingos\r\nSandra
-      Fid\xEAncio\r\nWillian Matheus Carvalho\r\n\r\nAnd to our family and friends,
-      who stood by our side when we needed the most.\r\nAnd to you, player, thank
-      you for playing.\r\n\r\n"
+      Felippo Cruz\r\nNicolas Kenji Sato Rocha\r\n\r\nMusic/SFX\r\nAur\xE9lio Felippo
+      Cruz\r\nDanyel Henrique Andrade\r\n\r\nEntrepreneurships\r\nAur\xE9lio Felippo
+      Cruz\r\nFrancisco Quarentei Nunes\nPedro Croco Navarro\r\n\r\nSocial Media\r\nAur\xE9lio
+      Felippo Cruz\r\nJ\xFAlia Nishida\r\n\r\nSpecial thanks to\r\n\r\nAguinaldo
+      Alberto J\xFAnior\r\nArthur Sampaio Fernandes\r\nDavid de Oliveira Lemes\r\nD\xE9bora
+      Machado\r\nEric de Lucas\r\n\xC9rica Okamoto\r\nFabiano On\xE7a\r\nFrancisco
+      Quarentei Nunes\r\nGilles Pedroza Leite\r\nGuilherme Mendes Salema\r\nJoyce
+      Daniele Tavares\r\nJ\xFAlia Nishida\r\nMarcelo Krokoscz\r\nMurilo Barbosa Sanches\r\nRafael
+      Diogo Rossetti\r\nRodrigo Cruz Domingos\r\nSandra Fid\xEAncio\r\nWillian Matheus
+      Carvalho\r\n\r\nAnd to our family and friends, who stood by our side when we
+      needed the most.\r\nAnd to you, player, thank you for playing.\r\n\r\n"
     m_Metadata:
       m_Items: []
   - m_Id: 19518629118099456
-    m_Localized: Move 3D
+    m_Localized: WASD - Move 3D
     m_Metadata:
       m_Items: []
   references:
