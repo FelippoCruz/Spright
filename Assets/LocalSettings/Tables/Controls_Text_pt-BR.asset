@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 97216933888
-    m_Localized: Socar e chutar
+    m_Localized: LMB - Socar / Chutar
     m_Metadata:
       m_Items: []
   - m_Id: 2497252208640
@@ -27,15 +27,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3047028994048
-    m_Localized: Interagir em 3D
+    m_Localized: E - Interagir em 3D
     m_Metadata:
       m_Items: []
   - m_Id: 3330614276096
-    m_Localized: Atirar 2D
+    m_Localized: F - Atirar 2D
     m_Metadata:
       m_Items: []
   - m_Id: 3775025950720
-    m_Localized: Pular 3D
+    m_Localized: "Espa\xE7o - Pular 3D"
     m_Metadata:
       m_Items: []
   - m_Id: 4150030282752
@@ -43,19 +43,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4480856010752
-    m_Localized: Pressionar Shift 2 vezes- Rolar em 3D
+    m_Localized: Pressionar Shift - Rolar em 3D
     m_Metadata:
       m_Items: []
   - m_Id: 4885895753728
-    m_Localized: Agachar 3D / Levantar 3D
+    m_Localized: C - Agachar 3D / Levantar 3D
     m_Metadata:
       m_Items: []
   - m_Id: 5239844679680
-    m_Localized: "Curar-se com a po\xE7\xE3o"
+    m_Localized: "R - Curar-se com a po\xE7\xE3o"
     m_Metadata:
       m_Items: []
   - m_Id: 5700211486720
-    m_Localized: "Ativa\xE7\xE3o de Trava de Mira em 3D"
+    m_Localized: "Q - Ativa\xE7\xE3o de Trava de Mira em 3D"
     m_Metadata:
       m_Items: []
   - m_Id: 19179761617485824
@@ -70,14 +70,13 @@ MonoBehaviour:
     m_Localized: "Criado por\r\nMechanic-All Studios\r\n\r\nProgramadores\r\nAur\xE9lio
       Felippo Cruz\r\n\r\nArtistas\r\nAur\xE9lio Felippo Cruz\r\nGuilherme Mendes
       Salema\r\nNicolas Kenji Sato Rocha\r\nPedro Croco Navarro\r\n\r\nDubladores\r\nArthur
-      Sampaio Fernandes - Slade Sullivan\r\nAur\xE9lio Felippo Cruz - Narrator/Zorathmon\r\n\xC9rica
+      Sampaio Fernandes - Slade Sullivan\r\nAur\xE9lio Felippo Cruz - Narrator\r\n\xC9rica
       Okamoto - Ophelia Sullivan\r\n\r\nGame/Level Designers\r\nAur\xE9lio Felippo
       Cruz\r\nDanyel Henrique Andrade\r\nPedro Croco Navarro\r\n\r\nEscritores\r\nAur\xE9lio
-      Felippo Cruz\r\nDanyel Henrique Andrade\r\n\r\nM\xFAsica/SFX\r\nAur\xE9lio
-      Felippo Cruz\r\nFrancisco Quarentei Nunes\r\nPedro Croco Navarro\r\n\r\n\rEmpreendedorismo\r\nAur\xE9lio
-      Felippo Cruz\r\nJ\xFAlia Nishida\r\n\r\nM\xEDdia Sociais\r\nAur\xE9lio Felippo
-      Cruz\r\nDanyel Henrique Andrade\r\nGuilherme Mendes Salema\r\nNicolas Kenji
-      Sato Rocha\r\nPedro Croco Navarro\r\nJ\xFAlia Nishida\r\n\r\nAgradecimento
+      Felippo Cruz\r\nNicolas Kenji Sato Rocha\r\n\r\nM\xFAsica/SFX\r\nAur\xE9lio
+      Felippo Cruz\r\nDanyel Henrique Andrade\r\n\r\n\rEmpreendedorismo\r\nAur\xE9lio
+      Felippo Cruz\r\nFrancisco Quarentei Nunes\nPedro Croco Navarro\r\n\r\nRedes
+      Sociais\r\nAur\xE9lio Felippo Cruz\r\nJ\xFAlia Nishida\r\n\r\nAgradecimento
       especial para\r\n\r\nAguinaldo Alberto J\xFAnior\r\nArthur Sampaio Fernandes\r\nDavid
       de Oliveira Lemes\r\nD\xE9bora Machado\r\nEric de Lucas\r\n\xC9rica Okamoto\r\nFabiano
       On\xE7a\r\nFrancisco Quarentei Nunes\r\nGilles Pedroza Leite\r\nGuilherme Mendes
@@ -89,7 +88,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19518629118099456
-    m_Localized: Mover 3D
+    m_Localized: WASD - Mover 3D
     m_Metadata:
       m_Items: []
   references:

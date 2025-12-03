@@ -83,13 +83,13 @@ public class Player : MonoBehaviour
 
             if (chosenIndex == 0)
             {
-                PlayerPrefs.SetString("playerName", "Slade Sullivan");
+                PlayerPrefs.SetString("PlayerName", "Slade Sullivan");
                 PlayerPrefs.Save();
             }
 
             else if (chosenIndex == 1)
             {
-                PlayerPrefs.SetString("playerName", "Ophelia Sullivan");
+                PlayerPrefs.SetString("PlayerName", "Ophelia Sullivan");
                 PlayerPrefs.Save();
             }
 

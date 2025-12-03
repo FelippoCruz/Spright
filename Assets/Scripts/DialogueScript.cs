@@ -48,7 +48,7 @@ public class DialogueScript : MonoBehaviour
 
     IEnumerator Start()
     {
-        playerName = PlayerPrefs.GetString("playerName", "Player");
+        playerName = PlayerPrefs.GetString("PlayerName", "Player");
         dialogueText.text = string.Empty;
 
         yield return LocalizationSettings.InitializationOperation;

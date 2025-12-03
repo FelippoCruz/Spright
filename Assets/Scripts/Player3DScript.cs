@@ -325,13 +325,13 @@ public class Player3DScript : MonoBehaviour
         string playerName = PlayerPrefs.GetString("PlayerName", "Slade Sullivan");
         if (playerName == "Ophelia Sullivan")
         {
-            activeAttackSounds = sladeAttackSounds;
-            activeJumpSound = sladeJumpSound;
-        }
-        else
-        {
             activeAttackSounds = opheliaAttackSounds;
             activeJumpSound = opheliaJumpSound;
+        }
+        else if (playerName == "Slade Sullivan")
+        {
+            activeAttackSounds = sladeAttackSounds;
+            activeJumpSound = sladeJumpSound;
         }
 
         // Safety fallback
