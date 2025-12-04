@@ -75,7 +75,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4294633107456
-    m_Localized: '3D & 2D -Tutorial
+    m_Localized: '3D + 2D Tutorial
 
       Luta de corpo e alma'
     m_Metadata:
@@ -186,7 +186,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 24407813959680
     m_Localized: "Para uma melhor experi\xEAncia visual, ajuste o brilho at\xE9 que
-      voc\xEA quase n\xE3o consiga ver o s\xEDmbolo.\r\n(Voc\xEA poder\xE1 ajustar
+      voc\xEA consiga ver direito as luzes do degrad\xEA.\r\n(Voc\xEA poder\xE1 ajustar
       isso mais tarde, juntamente com o contraste e a satura\xE7\xE3o, em Op\xE7\xF5es)"
     m_Metadata:
       m_Items: []

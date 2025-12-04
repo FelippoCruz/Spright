@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 97216933888
-    m_Localized: LMB - Punch / Kick
+    m_Localized: Mouse 1 - Punch / Kick
     m_Metadata:
       m_Items: []
   - m_Id: 2497252208640
@@ -27,11 +27,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3047028994048
-    m_Localized: E - Interact 3D
+    m_Localized: Interact 3D
     m_Metadata:
       m_Items: []
   - m_Id: 3330614276096
-    m_Localized: F - Shoot 2D
+    m_Localized: Shoot 2D
     m_Metadata:
       m_Items: []
   - m_Id: 3775025950720
@@ -39,7 +39,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4150030282752
-    m_Localized: Hold Shift - Run 3D
+    m_Localized: 'Hold Shift - Run 3D
+
+
+      Press Shift 2 times - Roll 3D'
     m_Metadata:
       m_Items: []
   - m_Id: 4480856010752
@@ -47,15 +50,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4885895753728
-    m_Localized: C - Crouch 3D / Stand 3D
+    m_Localized: Crouch 3D / Stand 3D
     m_Metadata:
       m_Items: []
   - m_Id: 5239844679680
-    m_Localized: R - Heal with the Potion
+    m_Localized: Heal with the Potion
     m_Metadata:
       m_Items: []
   - m_Id: 5700211486720
-    m_Localized: Q - Toggle Lock-On 3D
+    m_Localized: Toggle Lock-On 3D
     m_Metadata:
       m_Items: []
   - m_Id: 19179761617485824
@@ -89,7 +92,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19518629118099456
-    m_Localized: WASD - Move 3D
+    m_Localized: Move 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20340719146643456
+    m_Localized: 'Mission:
+
+      Kill the Bad Guys'
     m_Metadata:
       m_Items: []
   references:

@@ -75,7 +75,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4294633107456
-    m_Localized: '3D & 2D -Tutorial
+    m_Localized: '3D + 2D Tutorial
 
       Soul and body fight'
     m_Metadata:
@@ -186,10 +186,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 24407813959680
     m_Localized: 'For a better visual experience, adjust the brightness until you
-      can barely see the symbol.
+      can see the gradient`s lights properly.
 
-      (You''ll be able to adjust this later, along
-      with contrast and saturation later in Options)'
+      (You''ll be able to adjust this
+      later, along with contrast and saturation later in Options)'
     m_Metadata:
       m_Items: []
   - m_Id: 25156685967360
